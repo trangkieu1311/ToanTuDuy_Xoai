@@ -1,0 +1,2495 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>Học Toán Tư Duy – Xoài Gia Nhi 🥭</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  html,body{width:100%;min-height:100vh;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#fce4ec,#f8bbd0,#e1bee7,#fff9c4);
+    background-attachment:fixed;overflow-x:hidden}
+
+  /* ===== SPLASH ===== */
+  #splash{position:fixed;inset:0;background:linear-gradient(160deg,#fff9c4,#ffd54f,#ffcc02);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:100;padding:24px}
+  .splash-emoji-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  .float-emoji{position:absolute;font-size:2rem;animation:floatUp 6s linear infinite;opacity:.35}
+  @keyframes floatUp{0%{transform:translateY(110vh) rotate(0deg);opacity:.35}
+    100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
+  .splash-card{background:rgba(255,255,255,.88);border-radius:28px;padding:32px 28px;
+    max-width:480px;width:100%;text-align:center;
+    box-shadow:0 8px 32px rgba(255,180,100,.25);
+    backdrop-filter:blur(12px);position:relative;z-index:1}
+  .splash-title{font-size:1.6rem;font-weight:800;color:#e91e8c;margin-bottom:6px;line-height:1.3}
+  .splash-sub{font-size:.95rem;color:#888;margin-bottom:28px}
+  .splash-btn{display:block;width:100%;padding:18px;border:none;border-radius:18px;
+    font-size:1.1rem;font-weight:700;cursor:pointer;margin-bottom:14px;
+    transition:transform .15s,box-shadow .15s}
+  .splash-btn:active{transform:scale(.96)}
+  .btn-easy{background:linear-gradient(135deg,#ff8fab,#ff6b9d);color:#fff;
+    box-shadow:0 4px 16px rgba(255,107,157,.35)}
+  .btn-hard{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff;
+    box-shadow:0 4px 16px rgba(124,58,237,.35)}
+  .btn-label{font-size:.78rem;opacity:.85;font-weight:500;margin-top:2px}
+
+  /* ===== APP – FULL WIDTH ===== */
+  #app{display:none;flex-direction:column;min-height:100vh;
+    width:100%;padding:16px 24px;}
+
+  /* Header */
+  .app-header{display:flex;align-items:center;justify-content:space-between;
+    background:rgba(255,255,255,.82);border-radius:18px;padding:12px 20px;
+    margin-bottom:12px;backdrop-filter:blur(14px);
+    box-shadow:0 2px 12px rgba(233,30,140,.1)}
+  .header-title{font-size:1.1rem;font-weight:800;color:#e91e8c;flex:1}
+  .header-badge{background:linear-gradient(135deg,#ff8fab,#e91e8c);color:#fff;
+    font-size:.75rem;font-weight:700;padding:5px 12px;border-radius:20px;
+    cursor:pointer;margin-right:10px;white-space:nowrap}
+  .music-btn{background:linear-gradient(135deg,#ffd54f,#ffb300);border:none;
+    border-radius:12px;width:38px;height:38px;font-size:1.1rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center}
+
+  /* Score */
+  .score-bar{display:flex;gap:12px;margin-bottom:12px}
+  .score-item{flex:1;background:rgba(255,255,255,.82);border-radius:14px;
+    padding:10px;text-align:center;backdrop-filter:blur(14px);
+    box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .score-num{font-size:1.6rem;font-weight:800}
+  .score-label{font-size:.72rem;color:#888;font-weight:600}
+  .score-correct .score-num{color:#22c55e}
+  .score-wrong .score-num{color:#ef4444}
+
+  /* Tabs */
+  .type-tabs{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:6px;margin-bottom:12px;}
+.type-tabs::-webkit-scrollbar{display:none}
+  .tab-btn{flex-shrink:0;padding:9px 16px;border:none;border-radius:20px;
+    font-size:.82rem;font-weight:700;cursor:pointer;
+    background:rgba(255,255,255,.75);color:#888;
+    transition:all .2s;white-space:nowrap}
+  .tab-btn.active{background:linear-gradient(135deg,#ff8fab,#e91e8c);color:#fff;
+    box-shadow:0 3px 10px rgba(233,30,140,.3)}
+
+  /* Main layout: 2 cột trên màn lớn */
+  .main-layout{display:flex;gap:16px;flex:1;align-items:flex-start}
+  .col-left{flex:1.4;min-width:0}
+  .col-right{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+
+  /* Question Card */
+  .question-card{background:rgba(255,255,255,.88);border-radius:22px;padding:22px;
+    margin-bottom:12px;backdrop-filter:blur(14px);
+    box-shadow:0 4px 20px rgba(233,30,140,.1);min-height:180px}
+  .q-label{display:inline-block;background:linear-gradient(135deg,#fce4ec,#f8bbd0);
+    color:#e91e8c;font-size:.78rem;font-weight:700;padding:4px 14px;
+    border-radius:20px;margin-bottom:10px}
+  .q-text{font-size:1.1rem;font-weight:700;color:#333;margin-bottom:14px;line-height:1.4}
+
+  /* ===== EMOJI GRID – CỨNG 5/hàng hoặc 10/hàng ===== */
+  .emoji-grid{display:grid;gap:4px;margin-bottom:8px}
+  .emoji-grid.per5 {grid-template-columns:repeat(5,1fr)}
+  .emoji-grid.per10{grid-template-columns:repeat(10,1fr)}
+  .emoji-item{font-size:2.6rem;line-height:1.1;display:flex;
+    align-items:center;justify-content:center;
+    min-width:0;overflow:hidden;word-break:break-all}
+  .emoji-item.faded{opacity:.22;text-decoration:line-through}
+
+  .group-label{font-size:.82rem;font-weight:700;color:#e91e8c;margin-bottom:4px}
+  .group-count{font-size:.88rem;font-weight:800;color:#7c3aed;margin-left:4px}
+  .groups-wrap{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .group-box{flex:1;min-width:120px}
+  .group-divider{width:2px;background:linear-gradient(#ff8fab,#a78bfa);
+    border-radius:2px;align-self:stretch;margin-top:20px}
+  .emoji-count-label{font-size:.88rem;font-weight:800;color:#7c3aed;
+    text-align:center;margin-top:4px}
+
+  /* Cây số */
+  .tree-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0}
+  .tree-top{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .tree-node{background:linear-gradient(135deg,#fce4ec,#f8bbd0);border:2px solid #ff8fab;
+    border-radius:14px;padding:8px 18px;font-size:1.3rem;font-weight:800;color:#e91e8c;
+    min-width:56px;text-align:center}
+  .tree-node.unknown{background:linear-gradient(135deg,#f3f4f6,#e5e7eb);
+    border:2px dashed #9ca3af;color:#9ca3af}
+  .tree-branches{display:flex;gap:40px;align-items:flex-start;position:relative;margin-top:4px}
+  .tree-branches::before{content:'';position:absolute;top:0;left:50%;
+    transform:translateX(-50%);width:60%;height:2px;background:#ff8fab}
+  .tree-branch{display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+  .tree-branch::before{content:'';position:absolute;top:-12px;left:50%;
+    transform:translateX(-50%);width:2px;height:12px;background:#ff8fab}
+  .tree-emoji-row{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;
+    max-width:130px;font-size:1.5rem}
+
+  /* Dãy số */
+  .seq-wrap{display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+    justify-content:center;padding:8px 0}
+  .seq-num{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;
+    justify-content:center;font-size:1.2rem;font-weight:800;color:#fff}
+  .seq-num.pink{background:linear-gradient(135deg,#ff8fab,#e91e8c)}
+  .seq-num.yellow{background:linear-gradient(135deg,#ffd54f,#ffb300);color:#7c3aed}
+  .seq-num.blank{background:transparent;border:2px dashed #ff8fab;color:#e91e8c;
+    animation:blink .8s ease-in-out infinite alternate}
+  @keyframes blink{from{border-color:#ff8fab}to{border-color:#7c3aed}}
+  .seq-dash{font-size:1.2rem;color:#ccc;font-weight:700}
+
+  /* Phép tính ẩn */
+  .eq-wrap{display:flex;align-items:center;gap:10px;justify-content:center;
+    font-size:1.6rem;font-weight:800;color:#333;padding:14px 0;flex-wrap:wrap}
+  .eq-box{background:linear-gradient(135deg,#fce4ec,#f8bbd0);border-radius:12px;
+    padding:8px 18px;color:#e91e8c;min-width:52px;text-align:center}
+  .eq-box.unknown{background:linear-gradient(135deg,#f3f4f6,#e5e7eb);
+    border:2px dashed #9ca3af;color:#9ca3af;
+    animation:blink .8s ease-in-out infinite alternate}
+  .eq-op{color:#7c3aed}
+
+  /* Answers */
+  .answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .ans-btn{padding:18px 8px;border:none;border-radius:16px;font-size:1.2rem;font-weight:800;
+    cursor:pointer;background:rgba(255,255,255,.88);color:#333;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);transition:transform .15s,background .2s;
+    backdrop-filter:blur(8px);border:2px solid transparent}
+  .ans-btn:active{transform:scale(.95)}
+  .ans-btn.correct{background:linear-gradient(135deg,#bbf7d0,#86efac)!important;
+    border-color:#22c55e!important;color:#15803d!important}
+  .ans-btn.wrong{background:linear-gradient(135deg,#fecaca,#fca5a5)!important;
+    border-color:#ef4444!important;color:#b91c1c!important}
+  .answers-3{grid-template-columns:repeat(3,1fr)}
+
+  /* Feedback */
+  .feedback-area{min-height:46px;text-align:center;font-size:1rem;font-weight:700;
+    padding:10px;border-radius:14px;margin-bottom:10px;transition:all .3s}
+  .feedback-area.correct{background:linear-gradient(135deg,#bbf7d0,#86efac);color:#15803d}
+  .feedback-area.wrong{background:linear-gradient(135deg,#fecaca,#fca5a5);color:#b91c1c}
+
+  /* Action Bar */
+  .action-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+  .act-btn{padding:13px 4px;border:none;border-radius:14px;font-size:.75rem;font-weight:700;
+    cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;
+    transition:transform .15s;line-height:1.2}
+  .act-btn:active{transform:scale(.93)}
+  .act-btn span.icon{font-size:1.3rem}
+  .btn-read{background:linear-gradient(135deg,#dbeafe,#93c5fd);color:#1d4ed8}
+  .btn-hint{background:linear-gradient(135deg,#fef9c3,#fde047);color:#854d0e}
+  .btn-answer{background:linear-gradient(135deg,#dcfce7,#86efac);color:#15803d}
+  .btn-next{background:linear-gradient(135deg,#f3e8ff,#c084fc);color:#6b21a8}
+
+  /* Hint box */
+  .hint-box{background:linear-gradient(135deg,#fef9c3,#fef3c7);border:2px solid #fde047;
+    border-radius:16px;padding:14px;margin-bottom:12px;font-size:.9rem;
+    color:#78350f;line-height:1.6;display:none}
+  .hint-box.show{display:block}
+
+  /* Canvas */
+  #fireworks{position:fixed;inset:0;pointer-events:none;z-index:999}
+
+  /* ===== RESPONSIVE ===== */
+  /* Tablet/mobile: 1 cột */
+  @media(max-width:768px){
+    #app{padding:10px 12px}
+    .main-layout{flex-direction:column}
+    .col-left,.col-right{flex:unset;width:100%}
+    .emoji-item{font-size:2rem}
+    .seq-num{width:42px;height:42px;font-size:1rem}
+    .action-bar{gap:6px}
+    .act-btn{font-size:.68rem;padding:10px 2px}
+  }
+  /* Desktop lớn: giới hạn mềm để không quá rộng */
+  @media(min-width:1200px){
+    #app{padding:20px 48px}
+    .emoji-item{font-size:2.8rem}
+    .q-text{font-size:1.2rem}
+    .ans-btn{font-size:1.3rem;padding:20px 8px}
+  }
+  /* ===== D9 – LẠC LOÀI ===== */
+.odd-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:8px 0}
+.odd-cell{background:rgba(255,255,255,.82);border-radius:16px;padding:14px 4px;
+  text-align:center;font-size:2.8rem;border:3px solid transparent;
+  cursor:pointer;transition:all .2s;user-select:none}
+.odd-cell:active{transform:scale(.93)}
+.odd-cell.oc-ok{border-color:#22c55e!important;background:#bbf7d0!important}
+.odd-cell.oc-err{border-color:#ef4444!important;background:#fecaca!important}
+
+/* ===== D10 – CÂN NẶNG ===== */
+.scale-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0}
+.scale-dishes{display:flex;gap:50px;align-items:flex-end;justify-content:center;min-height:100px}
+.scale-dish-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;transition:margin .4s ease}
+.scale-dish-emoji{font-size:2.4rem;text-align:center;min-height:52px;
+  display:flex;align-items:flex-end;justify-content:center}
+.scale-dish-plate{width:100px;height:10px;
+  background:linear-gradient(135deg,#ffd54f,#ffb300);border-radius:8px}
+.scale-dish-label{font-size:.75rem;font-weight:700;color:#e91e8c;margin-top:2px;text-align:center}
+.scale-beam{width:200px;height:8px;
+  background:linear-gradient(135deg,#ff8fab,#e91e8c);
+  border-radius:4px;transform-origin:center;transition:transform .6s ease}
+.scale-pole{width:6px;height:48px;
+  background:linear-gradient(#e91e8c,#ff8fab);border-radius:3px;margin:0 auto}
+.scale-base{width:70px;height:12px;
+  background:linear-gradient(135deg,#a78bfa,#7c3aed);border-radius:8px;margin:0 auto}
+
+/* ===== D11 – GHÉP CẶP ===== */
+.match-wrap{display:flex;gap:32px;justify-content:center;padding:8px 0;align-items:flex-start}
+.match-col{display:flex;flex-direction:column;gap:12px;align-items:center}
+.match-col-label{font-size:.78rem;font-weight:700;color:#e91e8c;margin-bottom:2px}
+.match-item{width:72px;height:72px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;cursor:pointer;border:3px solid transparent;
+  background:rgba(255,255,255,.85);transition:all .2s;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);user-select:none;
+  word-break:break-all;text-align:center;line-height:1.2;padding:4px}
+.match-item:active{transform:scale(.93)}
+.match-item.mi-sel{border-color:#e91e8c;background:#fce4ec;transform:scale(1.08)}
+.match-item.mi-ok{border-color:#22c55e!important;background:#bbf7d0!important;cursor:default}
+.match-item.mi-err{border-color:#ef4444;background:#fecaca}
+.match-progress{text-align:center;font-size:.9rem;font-weight:700;color:#7c3aed;margin-top:6px}
+
+/* ===== D12 – SUDOKU ===== */
+.sudoku-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0}
+.sudoku-grid{display:inline-grid;gap:3px;background:#ff8fab;padding:3px;border-radius:14px}
+.sudoku-cell{width:56px;height:56px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.9rem;cursor:pointer;background:rgba(255,255,255,.9);
+  transition:all .2s;border:2px solid transparent}
+.sudoku-cell.sc-blank{background:linear-gradient(135deg,#fef9c3,#fde047);
+  border:2px dashed #ffb300;animation:blink .8s ease-in-out infinite alternate}
+.sudoku-cell.sc-locked{background:linear-gradient(135deg,#f3f4f6,#e5e7eb);cursor:default}
+.sudoku-cell.sc-sel{outline:3px solid #e91e8c;outline-offset:1px}
+.sudoku-opts{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.sudoku-opt{width:52px;height:52px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.9rem;cursor:pointer;background:rgba(255,255,255,.85);
+  border:2px solid #ff8fab;transition:all .2s;user-select:none}
+.sudoku-opt:active{transform:scale(.93)}
+
+/* ===== D13 – LẬP TRÌNH ===== */
+.prog-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0}
+.prog-grid{display:inline-grid;gap:4px;background:#ede9fe;padding:6px;border-radius:14px}
+.prog-cell{
+  width:clamp(38px,10vw,58px);
+  height:clamp(38px,10vw,58px);
+  font-size:clamp(1.2rem,3vw,1.9rem);
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.85);
+  border:2px solid rgba(167,139,250,.4);
+  border-radius:8px;
+}
+
+.prog-cell.pc-wall{background:linear-gradient(135deg,#374151,#1f2937)!important}
+.prog-cell.pc-goal{background:linear-gradient(135deg,#fef9c3,#fde047)!important}
+.prog-cell.pc-hero{background:linear-gradient(135deg,#fce4ec,#f8bbd0)!important}
+.prog-opts{display:flex;flex-direction:column;gap:8px;width:100%}
+.prog-opt{padding:12px 16px;border:none;border-radius:14px;
+  font-size:.95rem;font-weight:700;cursor:pointer;
+  background:rgba(255,255,255,.88);color:#333;
+  border:2px solid transparent;transition:all .2s;
+  text-align:left;user-select:none}
+.prog-opt:active{transform:scale(.97)}
+.prog-opt.po-ok{background:linear-gradient(135deg,#bbf7d0,#86efac)!important;
+  border-color:#22c55e!important;color:#15803d!important}
+.prog-opt.po-err{background:linear-gradient(135deg,#fecaca,#fca5a5)!important;
+  border-color:#ef4444!important;color:#b91c1c!important}
+
+/* ===== D14 – HÌNH PHẲNG ===== */
+.shape-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0}
+.shape-wrap svg{max-width:240px;height:auto;overflow:visible;display:block}
+.shape-info{font-size:.88rem;font-weight:700;color:#7c3aed;text-align:center}
+
+/* ===== D15 – KHỐI 3D ===== */
+.cube-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0}
+.cube-wrap svg{max-width:260px;height:auto}
+
+/* ===== RESPONSIVE D9-15 ===== */
+@media(max-width:768px){
+  .sudoku-cell{width:44px;height:44px;font-size:1.5rem}
+  .sudoku-opt{width:42px;height:42px;font-size:1.5rem}
+  .prog-cell{width:48px;height:48px;font-size:1.6rem}
+  .match-item{width:60px;height:60px;font-size:1.3rem}
+  .odd-cell{font-size:2.2rem}
+}
+
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-emoji-bg" id="emojiRain"></div>
+  <div class="splash-card">
+    <div class="splash-title">🥭 Học Toán Tư Duy<br/>Cùng Xoài Gia Nhi 🌈</div>
+    <div class="splash-sub">Chọn mức độ để bắt đầu nhé!</div>
+    <button class="splash-btn btn-easy" onclick="startApp(20)">
+      🌸 Phạm vi 0 – 20
+      <div class="btn-label">Dành cho bé mới học</div>
+    </button>
+    <button class="splash-btn btn-hard" onclick="startApp(50)">
+      🚀 Phạm vi 0 – 50
+      <div class="btn-label">Thử thách hơn nào!</div>
+    </button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- Header -->
+  <div class="app-header">
+    <div class="header-title">🥭 Học Toán Tư Duy Cùng Xoài Gia Nhi 🌈</div>
+    <div class="header-badge" id="rangeBadge" onclick="goSplash()">0–20 ▾</div>
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+  </div>
+
+  <!-- Score -->
+  <div class="score-bar">
+    <div class="score-item score-correct">
+      <div class="score-num" id="scoreCorrect">0</div>
+      <div class="score-label">✅ Đúng</div>
+    </div>
+    <div class="score-item score-wrong">
+      <div class="score-num" id="scoreWrong">0</div>
+      <div class="score-label">❌ Sai</div>
+    </div>
+  </div>
+   <!-- ===== NÚT MINITEST ===== -->
+  <button class="btn-minitest" onclick="openMinitest()">
+    🏆 Minitest 15 câu &nbsp;|&nbsp; 📋 Lịch sử &amp; Điểm yếu
+  </button>
+
+  <!-- Tabs -->
+  <div class="type-tabs" id="typeTabs"></div>
+
+  <!-- Main 2-col layout -->
+  <div class="main-layout">
+    <!-- Cột trái: câu hỏi -->
+    <div class="col-left">
+      <div class="question-card" id="questionCard">
+        <div class="q-label" id="qLabel">🔢 Nhận biết số</div>
+        <div class="q-text" id="qText"></div>
+        <div id="qVisual"></div>
+      </div>
+      <div class="hint-box" id="hintBox"></div>
+    </div>
+
+    <!-- Cột phải: đáp án + feedback + action -->
+    <div class="col-right">
+      <div class="answers-grid" id="answersGrid"></div>
+      <div class="feedback-area" id="feedbackArea"></div>
+      <div class="action-bar">
+        <button class="act-btn btn-read" onclick="readQuestion()">
+          <span class="icon">🔊</span>Đọc đề
+        </button>
+        <button class="act-btn btn-hint" onclick="showHint()">
+          <span class="icon">💡</span>Gợi ý
+        </button>
+        <button class="act-btn btn-answer" onclick="showAnswer()">
+          <span class="icon">🎯</span>Đáp án
+        </button>
+        <button class="act-btn btn-next" onclick="nextQuestion()">
+          <span class="icon">▶️</span>Câu tiếp
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<canvas id="fireworks"></canvas>
+
+<script>
+// ===================== CONFIG =====================
+const EMOJIS=['🍎','🍊','🍋','🍇','🍓','🍒','🥝','🍑','🥭','🍍',
+              '🌟','⭐','🌈','🎈','🎀','🦋','🌸','🌺','🌻','🍀',
+              '🚗','✈️','🚂','🚀','🎠','🍭','🍬','🎂','🍩','🎁'];
+
+const TABS=[
+  {id:1,label:'🔢 Nhận biết'},
+  {id:2,label:'⚖️ So sánh'},
+  {id:3,label:'📈 Dãy số'},
+  {id:4,label:'🔄 Quy luật'},
+  {id:5,label:'➕ Cộng trừ'},
+  {id:6,label:'🔍 Số ẩn'},
+  {id:7,label:'🧩 Phân tách'},
+  {id:8,label:'🌳 Cây số'},
+  // Thêm vào cuối mảng TABS, sau {id:8,...}:
+  {id:9,  label:'🔍 Lạc loài'},
+  {id:10, label:'🏋️ Cân nặng'},
+  {id:11, label:'🔗 Ghép cặp'},
+  {id:12, label:'🧮 Sudoku'},
+  {id:13, label:'💻 Lập trình'},
+  {id:14, label:'🔷 Hình phẳng'},
+  {id:15, label:'🧊 Khối 3D'},
+];
+
+// ===================== STATE =====================
+let MAX_NUM=20, currentType=1;
+let scoreCorrect=0, scoreWrong=0;
+let currentAnswer=null, currentHint='', currentQuestion='';
+let currentQuestionTTS=''; // chuỗi TTS riêng cho câu hỏi (không có ?)
+let answered=false;
+
+// ===================== SPLASH =====================
+function initSplashEmoji(){
+  const rain=document.getElementById('emojiRain');
+  const pool=['🐣','🐥','🐰','🌸','🌼','🍀','⭐','🎈'];
+  for(let i=0;i<18;i++){
+    const el=document.createElement('span');
+    el.className='float-emoji';
+    el.textContent=pool[i%pool.length];
+    el.style.left=(Math.random()*95)+'%';
+    el.style.animationDelay=(Math.random()*6)+'s';
+    el.style.animationDuration=(3+Math.random()*5)+'s';
+    el.style.fontSize=(1.2+Math.random()*1.2)+'rem';
+    rain.appendChild(el);
+  }
+}
+initSplashEmoji();
+
+function startApp(max){
+  MAX_NUM=max;
+  scoreCorrect=0; scoreWrong=0;
+  document.getElementById('scoreCorrect').textContent='0';
+  document.getElementById('scoreWrong').textContent='0';
+  document.getElementById('rangeBadge').textContent='0–'+max+' ▾';
+  document.getElementById('splash').style.display='none';
+  document.getElementById('app').style.display='flex';
+  buildTabs(); selectTab(1);
+}
+function goSplash(){
+  document.getElementById('splash').style.display='flex';
+  document.getElementById('app').style.display='none';
+}
+
+// ===================== TABS =====================
+function buildTabs(){
+  const wrap=document.getElementById('typeTabs');
+  wrap.innerHTML='';
+  TABS.forEach(t=>{
+    const btn=document.createElement('button');
+    btn.className='tab-btn'+(t.id===currentType?' active':'');
+    btn.textContent=t.label;
+    btn.onclick=()=>selectTab(t.id);
+    wrap.appendChild(btn);
+  });
+}
+function selectTab(id){
+  currentType=id;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active',TABS[i].id===id);
+  });
+  nextQuestion();
+}
+
+// ===================== TTS =====================
+/*
+ * stripForTTS: làm sạch chuỗi để đọc
+ * - Xóa HTML tags, emoji
+ * - Dấu – hoặc - giữa 2 số → " trừ "
+ * - Dấu – hoặc - đứng một mình (không kẹp số) → xóa (dấu gạch ngang thông thường)
+ * - KHÔNG replace "?" ở đây — xử lý ở tầng gọi
+ */
+function stripForTTS(str){
+  return str
+    // Xóa HTML
+    .replace(/<[^>]*>/g,'')
+    // Xóa emoji unicode
+    .replace(/[\u{1F300}-\u{1FAFF}]/gu,'')
+    .replace(/[\u{2600}-\u{27BF}]/gu,'')
+    .replace(/[\u{FE00}-\u{FEFF}]/gu,'')
+    .replace(/[\u{1F900}-\u{1F9FF}]/gu,'')
+    // Dấu trừ: – (en-dash) hoặc - kẹp giữa số/khoảng → " trừ "
+    .replace(/(\d)\s*[–\-]\s*(\d)/g,'$1 trừ $2')
+    .replace(/\s*[–\-]\s*(?=\d)/g,' trừ ')
+    .replace(/(?<=\d)\s*[–\-]\s*/g,' trừ ')
+
+    // Dấu trừ còn lại (đứng một mình) → xóa
+    .replace(/[–\-]/g,' ')
+    // Dấu > < =
+    .replace(/>/g,' lớn hơn ')
+    .replace(/</g,' nhỏ hơn ')
+    .replace(/=/g,' bằng ')
+    // Dấu +
+    .replace(/\+/g,' cộng ')
+    // "Nhóm B" → "Nhóm Bê"
+    .replace(/\bB\b/g,'Bê')
+    // Dọn khoảng trắng
+    .replace(/\s+/g,' ').trim();
+}
+
+/*
+ * stripForTTSWithQ: dùng khi chuỗi CÓ "?" trong công thức toán
+ * → replace "?" thành " bao nhiêu"
+ * Dùng cho: công thức như "3 + ? = 7", "? – 4 = 2"
+ */
+function stripForTTSWithQ(str){
+  return stripForTTS(str).replace(/\?/g,' bao nhiêu ');
+}
+
+/*
+ * stripForTTSNoQ: dùng khi chuỗi là câu text thường
+ * → xóa "?" (dấu hỏi cuối câu), không đọc thành "bao nhiêu"
+ */
+function stripForTTSNoQ(str){
+  return stripForTTS(str).replace(/\?/g,'');
+}
+
+function speak(text, hasFormulaQ=false){
+  if(!window.speechSynthesis) return;
+  const clean = hasFormulaQ ? stripForTTSWithQ(text) : stripForTTSNoQ(text);
+  window.speechSynthesis.cancel();
+  setTimeout(()=>{
+    const u=new SpeechSynthesisUtterance(clean);
+    u.lang='vi-VN'; u.rate=0.92; u.pitch=1.1;
+    window.speechSynthesis.speak(u);
+  },80);
+}
+
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden && window.speechSynthesis.paused)
+    window.speechSynthesis.resume();
+});
+
+// ===================== MUSIC =====================
+let audioCtx=null, musicPlaying=false, oscList=[];
+const NOTES=[261.63,293.66,329.63,349.23,392,440,493.88,523.25];
+
+function toggleMusic(){
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(musicPlaying){stopMusic();return;}
+  musicPlaying=true;
+  document.getElementById('musicBtn').textContent='🔇';
+  playMelody();
+}
+function stopMusic(){
+  musicPlaying=false;
+  document.getElementById('musicBtn').textContent='🎵';
+  oscList.forEach(o=>{try{o.stop()}catch(e){}});
+  oscList=[];
+}
+function playMelody(){
+  if(!musicPlaying) return;
+  const melody=[0,2,4,5,4,2,0,2,4,7,5,4,2,0];
+  let t=audioCtx.currentTime;
+  melody.forEach((n,i)=>{
+    const osc=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    osc.type='sine'; osc.frequency.value=NOTES[n%NOTES.length];
+    g.gain.setValueAtTime(0,t+i*.35);
+    g.gain.linearRampToValueAtTime(.07,t+i*.35+.05);
+    g.gain.linearRampToValueAtTime(0,t+i*.35+.3);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(t+i*.35); osc.stop(t+i*.35+.35);
+    oscList.push(osc);
+  });
+  setTimeout(playMelody,melody.length*350+200);
+}
+
+// ===================== FIREWORKS =====================
+const cvs=document.getElementById('fireworks');
+const ctx2=cvs.getContext('2d');
+let particles=[];
+function resizeCanvas(){cvs.width=window.innerWidth;cvs.height=window.innerHeight;}
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+
+function launchFireworks(){
+  for(let i=0;i<90;i++){
+    particles.push({
+      x:Math.random()*cvs.width,
+      y:Math.random()*cvs.height*.5,
+      vx:(Math.random()-.5)*7,
+      vy:(Math.random()-.5)*7-2,
+      alpha:1,
+      color:`hsl(${Math.random()*360},90%,60%)`,
+      r:3+Math.random()*3
+    });
+  }
+  requestAnimationFrame(animateFW);
+}
+function animateFW(){
+  ctx2.clearRect(0,0,cvs.width,cvs.height);
+  particles=particles.filter(p=>p.alpha>0.02);
+  particles.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.13; p.alpha-=0.017;
+    ctx2.globalAlpha=p.alpha;
+    ctx2.fillStyle=p.color;
+    ctx2.beginPath();
+    ctx2.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx2.fill();
+  });
+  ctx2.globalAlpha=1;
+  if(particles.length>0) requestAnimationFrame(animateFW);
+}
+
+// ===================== HELPERS =====================
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* renderEmojiGrid: CỨNG 5/hàng (n<30) hoặc 10/hàng (n>=30) */
+function renderEmojiGrid(n, emoji, fadedFrom){
+  const cls = n>=30 ? 'per10' : 'per5';
+  // Thu nhỏ emoji khi số lượng lớn
+  let emojiSize;
+  if(n >= 30) emojiSize = '1.5rem';
+  else if(n >= 20) emojiSize = '1.8rem';
+  else if(n >= 10) emojiSize = '2.2rem';
+  else emojiSize = '2.6rem';
+
+  let html=`<div class="emoji-grid ${cls}" style="font-size:${emojiSize}">`;
+  for(let i=0;i<n;i++){
+    const faded=(fadedFrom!==undefined && i>=fadedFrom);
+    html+=`<div class="emoji-item${faded?' faded':''}">${emoji}</div>`;
+  }
+  html+='</div>';
+  return html;
+}
+
+
+function buildAnswers(correct,mn,mx){
+  const set=new Set([correct]);
+  let tries=0;
+  while(set.size<4 && tries<300){
+    tries++;
+    const v=correct+rnd(-5,5);
+    if(v>=mn && v<=mx && v!==correct) set.add(v);
+  }
+  let extra=mn;
+  while(set.size<4){if(!set.has(extra))set.add(extra);extra++;}
+  return shuffle([...set]);
+}
+
+function renderAnswers(answers,correct,grid3=false){
+  const grid=document.getElementById('answersGrid');
+  grid.className='answers-grid'+(grid3?' answers-3':'');
+  grid.innerHTML='';
+  answered=false;
+  answers.forEach(a=>{
+    const btn=document.createElement('button');
+    btn.className='ans-btn';
+    btn.textContent=a;
+    btn.onclick=()=>checkAnswer(a,btn,correct);
+    grid.appendChild(btn);
+  });
+}
+
+function checkAnswer(val,btn,correct){
+  if(answered) return;
+  answered=true;
+  document.getElementById('hintBox').classList.remove('show');
+  if(val===correct){
+    scoreCorrect++;
+    document.getElementById('scoreCorrect').textContent=scoreCorrect;
+    btn.classList.add('correct');
+    document.getElementById('feedbackArea').className='feedback-area correct';
+    document.getElementById('feedbackArea').textContent='🎉 Giỏi lắm! Đúng rồi!';
+    speak('Giỏi lắm! Đúng rồi!');
+    launchFireworks();
+  } else {
+    scoreWrong++;
+    document.getElementById('scoreWrong').textContent=scoreWrong;
+    btn.classList.add('wrong');
+    document.getElementById('feedbackArea').className='feedback-area wrong';
+    document.querySelectorAll('.ans-btn').forEach(b=>{
+      if(b.textContent==correct) b.classList.add('correct');
+    });
+    const msg='Chưa đúng rồi! Đáp án đúng là '+correct;
+    document.getElementById('feedbackArea').textContent='❌ '+msg;
+    speak(msg);
+  }
+}
+
+// isFormulaQ: true nếu câu hỏi chứa công thức toán có dấu ?
+let currentIsFormulaQ=false;
+
+function readQuestion(){speak(currentQuestion, currentIsFormulaQ);}
+function showHint(){
+  const box=document.getElementById('hintBox');
+  box.textContent=currentHint;
+  box.classList.add('show');
+  // Gợi ý luôn là text thường → không đọc ? thành bao nhiêu
+  speak(currentHint, false);
+}
+function showAnswer(){
+  if(currentAnswer===null) return;
+  // Sudoku/Ghép cặp không có ans-btn thông thường
+  if(currentAnswer==='done'){
+    document.getElementById('feedbackArea').className='feedback-area correct';
+    document.getElementById('feedbackArea').textContent='🎯 Hãy nhìn từng hàng và cột — điền hình còn thiếu vào ô vàng nhé!';
+    speak('Hãy nhìn từng hàng và cột, điền hình còn thiếu vào ô vàng nhé!');
+    return;
+  }
+  document.querySelectorAll('.ans-btn').forEach(b=>{
+    if(b.textContent==currentAnswer) b.classList.add('correct');
+  });
+  document.getElementById('feedbackArea').className='feedback-area correct';
+  document.getElementById('feedbackArea').textContent='🎯 Đáp án đúng là: '+currentAnswer;
+  speak('Đáp án đúng là '+currentAnswer);
+}
+
+
+function setQuestion(label,text,visual,hint,answer,answers,grid3=false,isFormulaQ=false){
+  document.getElementById('qLabel').textContent=label;
+  document.getElementById('qText').textContent=text;
+  document.getElementById('qVisual').innerHTML=visual;
+  document.getElementById('feedbackArea').className='feedback-area';
+  document.getElementById('feedbackArea').textContent='';
+  document.getElementById('hintBox').classList.remove('show');
+  currentHint=hint;
+  currentQuestion=text;
+  currentAnswer=answer;
+  currentIsFormulaQ=isFormulaQ;
+  renderAnswers(answers,answer,grid3);
+}
+
+// ===================== GENERATORS =====================
+
+// --- Dạng 1 ---
+function genD1(){
+  const emoji=pick(EMOJIS);
+  const n=rnd(1,MAX_NUM);
+  const visual=renderEmojiGrid(n,emoji);
+  const q=`Có bao nhiêu ${emoji}?`;
+  const ans=buildAnswers(n,1,MAX_NUM);
+  const hint='Con hãy chỉ tay vào từng cái và đếm to lên nhé: một, hai, ba... đếm hết rồi mới chọn đáp án! nếu con nhìn biết ngay mà không cần đếm là bao nhiêu thì khen con nha';
+  // câu hỏi text thường (? cuối câu) → isFormulaQ=false
+  setQuestion('🔢 Nhận biết số',q,visual,hint,n,ans,false,false);
+}
+
+// --- Dạng 2 ---
+function genD2(){
+  const emoji=pick(EMOJIS);
+  let a=rnd(1,MAX_NUM), b=rnd(1,MAX_NUM);
+  const visual=`
+    <div class="groups-wrap">
+      <div class="group-box">
+        <div class="group-label">Nhóm A <span class="group-count">(${a})</span></div>
+        ${renderEmojiGrid(a,emoji)}
+      </div>
+      <div class="group-divider"></div>
+      <div class="group-box">
+        <div class="group-label">Nhóm B <span class="group-count">(${b})</span></div>
+        ${renderEmojiGrid(b,emoji)}
+      </div>
+    </div>`;
+  const correct=a>b?'>':a<b?'<':'=';
+  const q='So sánh Nhóm A và Nhóm B?';
+  const hint='Dấu > là miệng cá sấu há sang phải tức là số bên trái lớn hơn. Dấu < là miệng cá sấu há sang trái tức là số bên phải lớn hơn. Dấu = là hai gạch ngang bằng nhau. Miệng cá sấu luôn há về phía nhiều hơn nhé!';
+  const grid=document.getElementById('answersGrid');
+  document.getElementById('qLabel').textContent='⚖️ So sánh';
+  document.getElementById('qText').textContent=q;
+  document.getElementById('qVisual').innerHTML=visual;
+  document.getElementById('feedbackArea').className='feedback-area';
+  document.getElementById('feedbackArea').textContent='';
+  document.getElementById('hintBox').classList.remove('show');
+  currentHint=hint;
+  currentQuestion=q;
+  currentAnswer=correct;
+  currentIsFormulaQ=false;
+  grid.className='answers-grid answers-3';
+  grid.innerHTML=''; answered=false;
+  ['>','<','='].forEach(sym=>{
+    const btn=document.createElement('button');
+    btn.className='ans-btn'; btn.textContent=sym;
+    btn.style.fontSize='1.8rem';
+    btn.onclick=()=>checkAnswer(sym,btn,correct);
+    grid.appendChild(btn);
+  });
+}
+
+// --- Dạng 3 ---
+function genD3(){
+  const inc=Math.random()>.5;
+  const len=5;
+  const start=rnd(1,MAX_NUM-len);
+  const seq=[];
+  for(let i=0;i<len;i++) seq.push(inc?start+i:start+(len-1-i));
+  const blankIdx = rnd(1, len - 2); // tránh ô đầu và ô cuối để dễ suy luận
+  const blanks = [blankIdx];
+  const correct = seq[blankIdx];
+
+  let html='<div class="seq-wrap">';
+  seq.forEach((n,i)=>{
+    if(i>0) html+='<span class="seq-dash">–</span>';
+    if(blanks.includes(i)){
+      html+=`<div class="seq-num blank">?</div>`;
+    } else {
+      html+=`<div class="seq-num ${i%2===0?'pink':'yellow'}">${n}</div>`;
+    }
+  });
+  html+='</div>';
+  const dir=inc?'tăng dần':'giảm dần';
+  const q=`Dãy số ${dir}, số nào còn thiếu?`;
+  const ans=buildAnswers(correct,1,MAX_NUM);
+  const hint='Dãy số này đếm theo thứ tự nhé! Con nhìn số ngay trước ô trống là mấy? Đếm thêm một bước nữa là ra số cần điền!';
+  // câu hỏi text thường
+  setQuestion('📈 Dãy số tăng/giảm',q,html,hint,correct,ans,false,false);
+}
+
+// --- Dạng 4 ---
+function genD4(){
+  const steps=[2,3,5,10];
+  const step=pick(steps);
+  const maxStart=Math.floor((MAX_NUM-step*4));
+  const start=rnd(1,Math.max(1,maxStart));
+  const seq=[];
+  for(let i=0;i<5;i++) seq.push(start+step*i);
+  if(seq[seq.length-1]>MAX_NUM){genD4();return;}
+  const blankIdx=rnd(1,4);
+  const correct=seq[blankIdx];
+  let html='<div class="seq-wrap">';
+  seq.forEach((n,i)=>{
+    if(i>0) html+='<span class="seq-dash">–</span>';
+    if(i===blankIdx){
+      html+=`<div class="seq-num blank">?</div>`;
+    } else {
+      html+=`<div class="seq-num ${i%2===0?'pink':'yellow'}">${n}</div>`;
+    }
+  });
+  html+='</div>';
+  const q='Số nào còn thiếu trong dãy?';
+  let hint='';
+  if(step===2) hint='Con thử vỗ tay theo nhịp nhé:  Đây là đếm số cách nhau hai bước!';
+  else if(step===3) hint='Nhìn xem mỗi lần số tăng thêm mấy? Con đếm thêm ba mỗi lần nhé!';
+  else if(step===5) hint='Đây là đếm cách năm bước — năm, mười, mười lăm... Như đếm ngón tay của hai bàn tay!';
+  else hint='Đây là đếm theo chục — mười, hai mươi, ba mươi... Mỗi lần nhảy qua một chục luôn!';
+  const ans=buildAnswers(correct,1,MAX_NUM+10);
+  setQuestion('🔄 Quy luật dãy số',q,html,hint,correct,ans,false,false);
+}
+
+// --- Dạng 5 ---
+function genD5(){
+  const emoji=pick(EMOJIS);
+  const isAdd=Math.random()>.4;
+  let a,b,correct,q,visual;
+  if(isAdd){
+    a=rnd(1,Math.floor(MAX_NUM/2));
+    b=rnd(1,MAX_NUM-a);
+    correct=a+b;
+    visual=`
+      <div class="groups-wrap" style="align-items:flex-start">
+        <div class="group-box" style="text-align:center">
+          ${renderEmojiGrid(a,emoji)}
+          <div class="emoji-count-label">${a}</div>
+        </div>
+        <div style="font-size:2rem;font-weight:800;color:#7c3aed;padding-top:16px">+</div>
+        <div class="group-box" style="text-align:center">
+          ${renderEmojiGrid(b,emoji)}
+          <div class="emoji-count-label">${b}</div>
+        </div>
+      </div>`;
+    q=`${a} + ${b} = ?`;
+  } else {
+    const total=rnd(2,MAX_NUM);
+    b=rnd(1,total-1);
+    a=total-b;
+    correct=a;
+    visual=`
+      <div style="text-align:center">
+        ${renderEmojiGrid(total,emoji,a)}
+        <div class="emoji-count-label">${total}</div>
+      </div>`;
+    q=`${total} – ${b} = ?`;
+  }
+  let hint='';
+  const small=Math.min(a,b), big=Math.max(a,b);
+  if(!isAdd){
+    hint='Những hình bị gạch mờ là đã bị lấy đi rồi. Con chỉ đếm những hình còn rõ nét thôi nhé!';
+  } else if(small<=5){
+    hint=`Con giơ ngón tay lên nhé! Đã có ${big} rồi, giơ thêm ${small} ngón nữa và đếm tiếp con nhé cho đến khi con đếm hết số ngón tay đang giơ, con đếm nào : ${big+1}... ${big+2}...`;
+  } else if(a===b){
+    hint=`Ồ hai số giống nhau luôn! Con nhớ không: ${a} cộng ${a} bằng mấy?`;
+  } else {
+    const moc=Math.ceil(big/10)*10;
+    const need=moc-big, rem=small-need;
+    if(need>0 && rem>0 && rem<small){
+      hint=`Mẹo hay nè: Bên có nhiều hơn là ${big}, ta có ${big} cần thêm ${need} nữa là được ${moc}. Bên ít hơn là ${small}, ta lấy ${need} từ ${small} cho bên ${big} để tròn ${moc}. Do đó bên còn lại ${small} sẽ trừ đi ${need}, còn ${rem}. Vậy ${moc} cộng ${rem} bằng ${correct}!`;
+    } else {
+      hint=`Con giơ ngón tay lên nhé! Đã có ${big} rồi, đếm thêm ${small} nữa là ra đáp án!`;
+    }
+  }
+  const ans=buildAnswers(correct,0,MAX_NUM);
+  // q có dạng "3 + 4 = ?" → isFormulaQ=true
+  setQuestion('➕ Cộng trừ',q,visual,hint,correct,ans,false,true);
+}
+
+// --- Dạng 6 ---
+function genD6(){
+  const type=rnd(1,3);
+  let a,b,correct,q,formulaStr;
+  if(type===1){
+    b=rnd(1,Math.floor(MAX_NUM/2));
+    correct=rnd(1,MAX_NUM-b);
+    const c=correct+b;
+    q=`Tìm số còn thiếu: ? + ${b} = ${c}`;
+    formulaStr=`? + ${b} = ${c}`;
+  } else if(type===2){
+    a=rnd(2,MAX_NUM);
+    correct=rnd(1,a-1);
+    const c=a-correct;
+    q=`Tìm số còn thiếu: ${a} – ? = ${c}`;
+    formulaStr=`${a} – ? = ${c}`;
+  } else {
+    b=rnd(1,Math.floor(MAX_NUM/2));
+    const c=rnd(1,MAX_NUM-b);
+    correct=c+b;
+    q=`Tìm số còn thiếu: ? – ${b} = ${c}`;
+    formulaStr=`? – ${b} = ${c}`;
+  }
+  // Render visual từ formulaStr
+  const parts=formulaStr.split(/\s+/);
+  let visualInner='';
+  parts.forEach(p=>{
+    if(p==='?'){
+      visualInner+=`<div class="eq-box unknown">?</div>`;
+    } else if(['+','–','-','='].includes(p)){
+      visualInner+=`<span class="eq-op">${p}</span>`;
+    } else {
+      visualInner+=`<div class="eq-box">${p}</div>`;
+    }
+  });
+  const visual=`<div class="eq-wrap">${visualInner}</div>`;
+  const hint='Mẹo hay nè: con đếm lùi hoặc đếm tiếp để tìm số còn thiếu. Thử xem công thức — số cần tìm là mấy?';
+  const ans=buildAnswers(correct,1,MAX_NUM);
+  // q có "?" trong công thức → isFormulaQ=true
+  setQuestion('🔍 Điền số ẩn',q,visual,hint,correct,ans,false,true);
+}
+
+// --- Dạng 7 ---
+function genD7(){
+  const emoji=pick(EMOJIS);
+  const a=rnd(1,Math.floor(MAX_NUM/2));
+  const b=rnd(1,MAX_NUM-a);
+  const askTotal=Math.random()>.4;
+  const correct=askTotal?a+b:b;
+  const q=askTotal
+    ?`Có tất cả bao nhiêu ${emoji}?`
+    :`Nhóm B có bao nhiêu ${emoji}?`;
+  // KHÔNG hiển thị số đếm
+  const visual=`
+    <div class="groups-wrap">
+      <div class="group-box">
+        <div class="group-label">Nhóm A</div>
+        ${renderEmojiGrid(a,emoji)}
+      </div>
+      <div class="group-divider"></div>
+      <div class="group-box">
+        <div class="group-label">Nhóm B</div>
+        ${renderEmojiGrid(b,emoji)}
+      </div>
+    </div>`;
+  const hint='Con đếm nhóm bên trái trước, nhớ số đó. Rồi đếm nhóm bên phải. Gộp hai nhóm lại xem được bao nhiêu nhé!';
+  const ans=buildAnswers(correct,1,MAX_NUM);
+  setQuestion('🧩 Phân tách nhóm',q,visual,hint,correct,ans,false,false);
+}
+
+// --- Dạng 8 ---
+function genD8(){
+  const emoji=pick(EMOJIS);
+  const total=rnd(3,Math.min(MAX_NUM,20));
+  const left=rnd(1,total-1);
+  const right=total-left;
+  const askType=rnd(0,2);
+  let correct,q;
+  if(askType===0){correct=total;q='Tổng ở trên là bao nhiêu?';}
+  else if(askType===1){correct=left;q='Nhánh bên trái là bao nhiêu?';}
+  else{correct=right;q='Nhánh bên phải là bao nhiêu?';}
+
+  const topEmoji=`<div class="tree-emoji-row">${emoji.repeat(Math.min(total,10))}</div>`;
+  const leftEmoji=askType===1?'':
+    `<div class="tree-emoji-row">${emoji.repeat(Math.min(left,8))}</div>`;
+  const rightEmoji=askType===2?'':
+    `<div class="tree-emoji-row">${emoji.repeat(Math.min(right,8))}</div>`;
+
+  const visual=`
+    <div class="tree-wrap">
+      <div class="tree-top">
+        <div class="tree-node${askType===0?' unknown':''}">${askType===0?'?':total}</div>
+        ${topEmoji}
+      </div>
+      <div class="tree-branches">
+        <div class="tree-branch">
+          <div class="tree-node${askType===1?' unknown':''}">${askType===1?'?':left}</div>
+          ${leftEmoji}
+        </div>
+        <div class="tree-branch">
+          <div class="tree-node${askType===2?' unknown':''}">${askType===2?'?':right}</div>
+          ${rightEmoji}
+        </div>
+      </div>
+    </div>`;
+  const hint='Số ở trên là tổng của hai số bên dưới. Con lấy số trên trừ đi số đã biết là ra số còn lại nhé!';
+  const ans=buildAnswers(correct,1,MAX_NUM);
+  setQuestion('🌳 Tách gộp / Cây số',q,visual,hint,correct,ans,false,false);
+}
+
+// ===================== NEXT QUESTION =====================
+function nextQuestion(){
+  document.getElementById('hintBox').classList.remove('show');
+  document.getElementById('feedbackArea').className='feedback-area';
+  document.getElementById('feedbackArea').textContent='';
+  switch(currentType){
+    case 1:genD1();break; case 2:genD2();break;
+    case 3:genD3();break; case 4:genD4();break;
+    case 5:genD5();break; case 6:genD6();break;
+    case 7:genD7();break; case 8:genD8();break;
+  }
+}
+// ===================== D9 – LẠC LOÀI =====================
+const ODD_GROUPS=[
+  {name:'trái cây',
+   items:['🍎','🍊','🍋','🍇','🍓','🍒','🥝','🍑','🥭','🍍'],
+   odd:['🚗','✈️','🚂','🐶','🐱','🌸','🎈','🎂','🏠','⚽']},
+  {name:'phương tiện',
+   items:['🚗','✈️','🚂','🚀','🚁','🚢','🏎️','🚐','🚌','🛸'],
+   odd:['🍎','🍊','🐶','🌸','🎈','🎂','🦋','🌻','🐱','🍕']},
+  {name:'động vật',
+   items:['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯'],
+   odd:['🍎','🚗','✈️','🌸','🎈','🎂','🍭','🎀','🏠','🎵']},
+  {name:'hoa',
+   items:['🌸','🌺','🌻','🌹','🌷','💐','🌼','🪷'],
+   odd:['🍎','🚗','🐶','🎈','🎂','🍭','🎀','🚀','🐱','🍕']},
+  {name:'đồ ăn ngọt',
+   items:['🍭','🍬','🎂','🍩','🍪','🍫','🧁','🍦','🍮','🍡'],
+   odd:['🚗','🐶','🌸','🎈','✈️','🌻','🦋','🚂','🏠','⚽']},
+];
+
+function genD9(){
+  const grp=pick(ODD_GROUPS);
+  const mainItems=shuffle([...grp.items]).slice(0,3);
+  const oddItem=pick(grp.odd);
+  const all=shuffle([...mainItems, oddItem]);
+
+  document.getElementById('qLabel').textContent='🔍 Tìm hình lạc loài';
+  document.getElementById('qText').textContent=`Hình nào không thuộc nhóm ${grp.name}?`;
+  document.getElementById('feedbackArea').className='feedback-area';
+  document.getElementById('feedbackArea').textContent='';
+  document.getElementById('hintBox').classList.remove('show');
+  document.getElementById('answersGrid').innerHTML='';
+
+  currentHint=`Con nhìn xem 3 hình kia có điểm gì giống nhau? Hình nào không thuộc nhóm ${grp.name} — đó là hình lạc loài!`;
+  currentQuestion=`Hình nào không thuộc nhóm ${grp.name}?`;
+  currentAnswer=oddItem;
+  currentIsFormulaQ=false;
+  answered=false;
+
+  let html='<div class="odd-grid">';
+  all.forEach(em=>{
+    html+=`<div class="odd-cell" data-val="${em}" onclick="checkOdd(this)">${em}</div>`;
+  });
+  html+='</div>';
+  document.getElementById('qVisual').innerHTML=html;
+}
+
+function checkOdd(el){
+  if(answered) return;
+  answered=true;
+  const val=el.getAttribute('data-val');
+  document.getElementById('hintBox').classList.remove('show');
+  const fb=document.getElementById('feedbackArea');
+  if(val===currentAnswer){
+    scoreCorrect++;
+    document.getElementById('scoreCorrect').textContent=scoreCorrect;
+    el.classList.add('oc-ok');
+    fb.className='feedback-area correct';
+    fb.textContent='🎉 Giỏi lắm! Đúng rồi!';
+    speak('Giỏi lắm! Đúng rồi!');
+    launchFireworks();
+  } else {
+    scoreWrong++;
+    document.getElementById('scoreWrong').textContent=scoreWrong;
+    el.classList.add('oc-err');
+    document.querySelectorAll('.odd-cell').forEach(c=>{
+      if(c.getAttribute('data-val')===currentAnswer) c.classList.add('oc-ok');
+    });
+    fb.className='feedback-area wrong';
+    fb.textContent=`❌ Chưa đúng! Hình lạc loài là ${currentAnswer}`;
+    speak('Chưa đúng rồi!');
+  }
+}
+
+// ===================== D10 – CÂN NẶNG =====================
+const SCALE_PAIRS=[
+  {heavy:'🐘',light:'🐭',heavyName:'con voi',  lightName:'con chuột'},
+  {heavy:'🦁',light:'🐱',heavyName:'con sư tử',lightName:'con mèo'},
+  {heavy:'🐋',light:'🐟',heavyName:'cá voi',   lightName:'cá nhỏ'},
+  {heavy:'🚗',light:'🚲',heavyName:'xe hơi',   lightName:'xe đạp'},
+  {heavy:'🐮',light:'🐔',heavyName:'con bò',   lightName:'con gà'},
+  {heavy:'🍉',light:'🍓',heavyName:'quả dưa hấu',lightName:'quả dâu'},
+  {heavy:'🐘',light:'🐇',heavyName:'con voi',  lightName:'con thỏ'},
+  {heavy:'📚',light:'🪶',heavyName:'chồng sách',lightName:'chiếc lông'},
+];
+
+function genD10(){
+  const pair=pick(SCALE_PAIRS);
+  // Cán cân ban đầu THẲNG — không nghiêng, chỉ hỏi cái nào nặng hơn
+  const visual=`
+    <div class="scale-wrap">
+      <div class="scale-dishes">
+        <div class="scale-dish-wrap">
+          <div class="scale-dish-emoji">${pair.heavy}</div>
+          <div class="scale-dish-plate"></div>
+          <div class="scale-dish-label">${pair.heavyName}</div>
+        </div>
+        <div class="scale-dish-wrap">
+          <div class="scale-dish-emoji">${pair.light}</div>
+          <div class="scale-dish-plate"></div>
+          <div class="scale-dish-label">${pair.lightName}</div>
+        </div>
+      </div>
+      <div class="scale-beam" style="transform:rotate(0deg)"></div>
+      <div class="scale-pole"></div>
+      <div class="scale-base"></div>
+    </div>`;
+
+  // Đáp án có cả emoji + tên
+  const ans=[
+    `${pair.heavy} ${pair.heavyName}`,
+    `${pair.light} ${pair.lightName}`
+  ];
+  const correct=`${pair.heavy} ${pair.heavyName}`;
+
+  setQuestion(
+    '🏋️ Cân nặng',
+    'Cái nào nặng hơn?',
+    visual,
+    'Con hãy suy nghĩ xem trong thực tế cái nào nặng hơn nhé!',
+    correct,
+    ans,
+    false, false
+  );
+}
+
+
+// ===================== D11 – GHÉP CẶP =====================
+const MATCH_SETS=[
+  {pairs:[{l:'🍎',r:'1'},{l:'🍊🍊🍊',r:'3'},{l:'🍋🍋',r:'2'},{l:'🍇🍇🍇🍇',r:'4'}]},
+  {pairs:[{l:'🚗',r:'1'},{l:'🚗🚗🚗🚗',r:'4'},{l:'🚗🚗',r:'2'},{l:'🚗🚗🚗',r:'3'}]},
+  {pairs:[{l:'⭐',r:'1'},{l:'⭐⭐⭐',r:'3'},{l:'⭐⭐⭐⭐⭐',r:'5'},{l:'⭐⭐',r:'2'}]},
+  {pairs:[{l:'🌸',r:'1'},{l:'🌸🌸🌸🌸',r:'4'},{l:'🌸🌸',r:'2'},{l:'🌸🌸🌸',r:'3'}]},
+  {pairs:[{l:'🐶',r:'1'},{l:'🐶🐶🐶',r:'3'},{l:'🐶🐶🐶🐶🐶',r:'5'},{l:'🐶🐶',r:'2'}]},
+];
+
+// State ghép cặp — dùng biến riêng, không đụng state Milestone 1
+let matchState={sel:null, done:0, total:0, pairs:[], rOrder:[]};
+
+function genD11(){
+  const data=pick(MATCH_SETS);
+  const pairs=shuffle([...data.pairs]);
+  const rOrder=shuffle(pairs.map(p=>p.r));
+  matchState={sel:null, done:0, total:pairs.length, pairs, rOrder};
+
+  document.getElementById('qLabel').textContent='🔗 Ghép cặp';
+  document.getElementById('qText').textContent='Nối số lượng với chữ số đúng!';
+  document.getElementById('feedbackArea').className='feedback-area';
+  document.getElementById('feedbackArea').textContent='';
+  document.getElementById('hintBox').classList.remove('show');
+  document.getElementById('answersGrid').innerHTML='';
+
+  currentHint='Đếm số hình bên trái rồi tìm chữ số tương ứng bên phải nhé!';
+  currentQuestion='Nối số lượng với chữ số đúng!';
+  currentAnswer='done';
+  currentIsFormulaQ=false;
+  answered=false;
+
+  let html='<div class="match-wrap">';
+  // Cột trái
+  html+='<div class="match-col"><div class="match-col-label">Số lượng</div>';
+  pairs.forEach((p,i)=>{
+    html+=`<div class="match-item" id="ml${i}" data-side="left" data-idx="${i}" onclick="matchClick(this)">${p.l}</div>`;
+  });
+  html+='</div>';
+  // Cột phải
+  html+='<div class="match-col"><div class="match-col-label">Chữ số</div>';
+  rOrder.forEach((r,i)=>{
+    html+=`<div class="match-item" id="mr${i}" data-side="right" data-val="${r}" onclick="matchClick(this)">${r}</div>`;
+  });
+  html+='</div></div>';
+  html+=`<div class="match-progress" id="matchProg">0 / ${pairs.length} cặp</div>`;
+  document.getElementById('qVisual').innerHTML=html;
+}
+
+function matchClick(el){
+  if(el.classList.contains('mi-ok')) return;
+  const side=el.getAttribute('data-side');
+  if(side==='left'){
+    // Bỏ chọn cũ nếu có
+    if(matchState.sel && matchState.sel.getAttribute('data-side')==='left'){
+      matchState.sel.classList.remove('mi-sel');
+    }
+    matchState.sel=el;
+    el.classList.add('mi-sel');
+  } else {
+    if(!matchState.sel) return;
+    const idx=parseInt(matchState.sel.getAttribute('data-idx'));
+    const correctVal=matchState.pairs[idx].r;
+    const chosen=el.getAttribute('data-val');
+    if(chosen===correctVal){
+      matchState.sel.classList.remove('mi-sel');
+      matchState.sel.classList.add('mi-ok');
+      el.classList.add('mi-ok');
+      matchState.done++;
+      matchState.sel=null;
+      document.getElementById('matchProg').textContent=`${matchState.done} / ${matchState.total} cặp`;
+      if(matchState.done===matchState.total){
+        scoreCorrect++;
+        document.getElementById('scoreCorrect').textContent=scoreCorrect;
+        document.getElementById('feedbackArea').className='feedback-area correct';
+        document.getElementById('feedbackArea').textContent='🎉 Xuất sắc! Ghép đúng hết rồi!';
+        speak('Xuất sắc! Ghép đúng hết rồi!');
+        launchFireworks();
+        answered=true;
+      } else {
+        speak('Đúng rồi! Tiếp tục nhé!');
+      }
+    } else {
+      // Sai: rung đỏ rồi reset
+      el.classList.add('mi-err');
+      matchState.sel.classList.add('mi-err');
+      setTimeout(()=>{
+        el.classList.remove('mi-err');
+        matchState.sel.classList.remove('mi-sel','mi-err');
+        matchState.sel=null;
+      },600);
+      speak('Chưa đúng, thử lại nhé!');
+    }
+  }
+}
+
+// ===================== D12 – SUDOKU EMOJI =====================
+const SUDOKU_SETS=[
+  ['🍎','🍊','🍋','🍇'],
+  ['🚗','✈️','🚂','🚀'],
+  ['🐶','🐱','🐰','🐻'],
+  ['🌸','🌻','🌺','🌼'],
+];
+// 4 template lưới 4x4 hợp lệ (mỗi hàng, cột, 2x2 box đủ 4 loại)
+const SUDOKU_TEMPLATES=[
+  [[0,1,2,3],[2,3,0,1],[1,0,3,2],[3,2,1,0]],
+  [[0,1,2,3],[3,2,1,0],[1,0,3,2],[2,3,0,1]],
+  [[1,0,3,2],[2,3,0,1],[3,2,1,0],[0,1,2,3]],
+  [[2,3,0,1],[0,1,2,3],[3,2,1,0],[1,0,3,2]],
+];
+
+// State sudoku
+let sudokuState={grid:[],blanks:[],emojis:[],selBlank:null};
+
+function genD12(){
+  const emojis=pick(SUDOKU_SETS);
+  const tmpl=pick(SUDOKU_TEMPLATES);
+  // Chọn 4 ô trống ngẫu nhiên (mỗi hàng 1 ô)
+  const blanks=[];
+  for(let r=0;r<4;r++) blanks.push([r, rnd(0,3)]);
+  sudokuState={grid:tmpl, blanks, emojis, selBlank:null};
+
+  document.getElementById('qLabel').textContent='🧮 Sudoku Emoji';
+  document.getElementById('qText').textContent='Mỗi hàng và cột chỉ xuất hiện mỗi hình ảnh một lần. Điền vào ô trống hình còn thiếu nhé!';
+  document.getElementById('feedbackArea').className='feedback-area';
+  document.getElementById('feedbackArea').textContent='';
+  document.getElementById('hintBox').classList.remove('show');
+  document.getElementById('answersGrid').innerHTML='';
+
+  currentHint='Con nhìn từng hàng và từng cột xem còn thiếu hình nào. Mỗi hàng, mỗi cột phải có đủ 4 loại hình khác nhau con nhé. Hàng con nhìn từ trái sang phải, cột con nhìn từ trên xuống dưới!';
+  currentQuestion='Mỗi hàng và cột chỉ xuất hiện mỗi emoji một lần.';
+  currentAnswer='done';
+  currentIsFormulaQ=false;
+  answered=false;
+
+  renderSudoku();
+}
+
+function renderSudoku(){
+  const s=sudokuState;
+  const isBlank=(r,c)=>s.blanks.some(b=>b[0]===r&&b[1]===c);
+  const getFilledVal=(r,c)=>{
+    const b=s.blanks.find(b=>b[0]===r&&b[1]===c);
+    return (b&&b[2]!==undefined)?s.emojis[b[2]]:null;
+  };
+  const isSel=(r,c)=>s.selBlank&&s.selBlank[0]===r&&s.selBlank[1]===c;
+
+  let html='<div class="sudoku-wrap">';
+  html+=`<div class="sudoku-grid" style="grid-template-columns:repeat(4,1fr)">`;
+  for(let r=0;r<4;r++){
+    for(let c=0;c<4;c++){
+      if(isBlank(r,c)){
+        const fv=getFilledVal(r,c);
+        const selCls=isSel(r,c)?' sc-sel':'';
+        html+=`<div class="sudoku-cell sc-blank${selCls}" data-r="${r}" data-c="${c}" onclick="sudokuSelectBlank(this)">${fv||'?'}</div>`;
+      } else {
+        html+=`<div class="sudoku-cell sc-locked">${s.emojis[s.grid[r][c]]}</div>`;
+      }
+    }
+  }
+  html+='</div>';
+  html+='<div class="sudoku-opts">';
+  s.emojis.forEach((em,i)=>{
+    html+=`<div class="sudoku-opt" data-eidx="${i}" onclick="sudokuFill(this)">${em}</div>`;
+  });
+  html+='</div></div>';
+  document.getElementById('qVisual').innerHTML=html;
+}
+
+function sudokuSelectBlank(el){
+  sudokuState.selBlank=[parseInt(el.getAttribute('data-r')), parseInt(el.getAttribute('data-c'))];
+  renderSudoku();
+}
+
+function sudokuFill(el){
+  if(!sudokuState.selBlank) return;
+  const [r,c]=sudokuState.selBlank;
+  const eidx=parseInt(el.getAttribute('data-eidx'));
+  // Ghi giá trị vào blank
+  const b=sudokuState.blanks.find(b=>b[0]===r&&b[1]===c);
+  if(b) b[2]=eidx;
+  renderSudoku();
+  // Kiểm tra xong chưa
+  const allFilled=sudokuState.blanks.every(b=>b[2]!==undefined);
+  if(!allFilled) return;
+  const allCorrect=sudokuState.blanks.every(b=>b[2]===sudokuState.grid[b[0]][b[1]]);
+  const fb=document.getElementById('feedbackArea');
+  if(allCorrect){
+    scoreCorrect++;
+    document.getElementById('scoreCorrect').textContent=scoreCorrect;
+    fb.className='feedback-area correct';
+    fb.textContent='🎉 Xuất sắc! Điền đúng hết!';
+    speak('Xuất sắc! Điền đúng hết!');
+    launchFireworks();
+    answered=true;
+  } else {
+    fb.className='feedback-area wrong';
+    fb.textContent='❌ Có ô chưa đúng, thử lại nhé!';
+    speak('Có ô chưa đúng, thử lại nhé!');
+  }
+}
+
+// ===================== D13 – LẬP TRÌNH =====================
+// grid: 0=trống, 1=tường, 2=đích. hero=[r,c]
+const PROG_PUZZLES=[
+  // ===== 3x3 (giữ nguyên 3 cái cũ) =====
+  {grid:[[0,0,0],[0,1,0],[0,0,2]], hero:[0,0], goal:[2,2], walls:[[1,1]],
+   opts:['Xuống, xuống, phải, phải ⬇️⬇️➡️➡️',
+         'Phải, phải, xuống, xuống ➡️➡️⬇️⬇️',
+         'Xuống, phải, xuống, phải ⬇️➡️⬇️➡️'],
+   correct:1,
+   hint:'Có tường chặn ở giữa! Con phải đi phải trước rồi mới xuống nhé.'},
+  {grid:[[0,0,0],[1,1,0],[0,0,2]], hero:[0,0], goal:[2,2], walls:[[1,0],[1,1]],
+   opts:['Phải, phải, xuống, xuống ➡️➡️⬇️⬇️',
+         'Xuống, phải, phải, xuống ⬇️➡️➡️⬇️',
+         'Phải, xuống, phải, xuống ➡️⬇️➡️⬇️'],
+   correct:0,
+   hint:'Hàng giữa bị chặn bên trái. Con đi phải hết rồi mới xuống nhé!'},
+  {grid:[[0,1,0],[0,0,0],[1,0,2]], hero:[0,0], goal:[2,2], walls:[[0,1],[2,0]],
+   opts:['Xuống, xuống, phải, phải ⬇️⬇️➡️➡️',
+         'Phải, xuống, phải, xuống ➡️⬇️➡️⬇️',
+         'Xuống, phải, xuống, phải ⬇️➡️⬇️➡️'],
+   correct:2,
+   hint:'Tường ở đầu hàng trên và đầu cột dưới. Con đi xuống, phải, xuống, phải!'},
+
+  // ===== 4x4 =====
+  {grid:[[0,0,0,0],[0,1,1,0],[0,0,0,0],[0,0,0,2]], hero:[0,0], goal:[3,3],
+   walls:[[1,1],[1,2]],
+   opts:['Xuống, phải, phải, phải, xuống, xuống ⬇️➡️➡️➡️⬇️⬇️',
+         'Phải, phải, phải, xuống, xuống, xuống ➡️➡️➡️⬇️⬇️⬇️',
+         'Xuống, xuống, phải, phải, phải, xuống ⬇️⬇️➡️➡️➡️⬇️'],
+   correct:1,
+   hint:'Hàng giữa bị chặn! Con đi phải hết 3 bước rồi mới xuống 3 bước nhé!'},
+  {grid:[[0,0,0,0],[1,1,0,0],[0,0,0,1],[0,0,0,2]], hero:[0,0], goal:[3,3],
+   walls:[[1,0],[1,1],[2,3]],
+   opts:['Phải, phải, xuống, xuống, phải, xuống ➡️➡️⬇️⬇️➡️⬇️',
+         'Phải, phải, phải, xuống, xuống, xuống ➡️➡️➡️⬇️⬇️⬇️',
+         'Xuống, phải, phải, phải, xuống, xuống ⬇️➡️➡️➡️⬇️⬇️'],
+   correct:0,
+   hint:'Bên trái bị chặn, góc phải dưới cũng bị chặn. Đi phải 2, xuống 2, phải 1, xuống 1!'},
+  {grid:[[0,0,0,0],[0,1,0,0],[0,1,0,0],[0,0,0,2]], hero:[0,0], goal:[3,3],
+   walls:[[1,1],[2,1]],
+   opts:['Phải, xuống, phải, phải, xuống, xuống ➡️⬇️➡️➡️⬇️⬇️',
+         'Xuống, xuống, xuống, phải, phải, phải ⬇️⬇️⬇️➡️➡️➡️',
+         'Phải, phải, phải, xuống, xuống, xuống ➡️➡️➡️⬇️⬇️⬇️'],
+   correct:2,
+   hint:'Cột thứ 2 bị chặn 2 ô liên tiếp. Con đi phải 3 bước rồi xuống 3 bước!'},
+
+  // ===== 5x5 =====
+  {grid:[[0,0,0,0,0],[0,1,1,0,0],[0,0,0,1,0],[0,1,0,0,0],[0,0,0,0,2]],
+   hero:[0,0], goal:[4,4],
+   walls:[[1,1],[1,2],[2,3],[3,1]],
+   opts:['Xuống, phải, xuống, phải, phải, xuống, phải, xuống ⬇️➡️⬇️➡️➡️⬇️➡️⬇️',
+         'Phải, phải, phải, phải, xuống, xuống, xuống, xuống ➡️➡️➡️➡️⬇️⬇️⬇️⬇️',
+         'Xuống, xuống, phải, phải, xuống, phải, phải, xuống ⬇️⬇️➡️➡️⬇️➡️➡️⬇️'],
+   correct:1,
+   hint:'Lưới 5x5 rộng hơn! Con thử đi phải 4 bước rồi xuống 4 bước xem có bị chặn không nhé!'},
+  {grid:[[0,0,0,0,0],[1,1,0,0,0],[0,0,0,1,0],[0,1,1,0,0],[0,0,0,0,2]],
+   hero:[0,0], goal:[4,4],
+   walls:[[1,0],[1,1],[2,3],[3,1],[3,2]],
+   opts:['Phải, phải, xuống, xuống, phải, xuống, phải, xuống ➡️➡️⬇️⬇️➡️⬇️➡️⬇️',
+         'Phải, phải, phải, phải, xuống, xuống, xuống, xuống ➡️➡️➡️➡️⬇️⬇️⬇️⬇️',
+         'Xuống, phải, phải, phải, xuống, phải, xuống, xuống ⬇️➡️➡️➡️⬇️➡️⬇️⬇️'],
+   correct:1,
+   hint:'Bên trái bị chặn nhiều! Thử đi phải hết rồi mới xuống xem sao nhé!'},
+];
+
+
+function genD13(){
+  const puz=pick(PROG_PUZZLES);
+  const rows=puz.grid.length, cols=puz.grid[0].length;
+
+  document.getElementById('qLabel').textContent='💻 Lập trình đường đi';
+  document.getElementById('qText').textContent='Chọn lệnh đúng để dẫn nhân vật đến đích!';
+  document.getElementById('feedbackArea').className='feedback-area';
+  document.getElementById('feedbackArea').textContent='';
+  document.getElementById('hintBox').classList.remove('show');
+  document.getElementById('answersGrid').innerHTML='';
+
+  currentHint=puz.hint;
+  currentQuestion='Chọn lệnh đúng để dẫn nhân vật đến đích!';
+  currentAnswer=puz.opts[puz.correct];
+  currentIsFormulaQ=false;
+  answered=false;
+
+  let html=`<div class="prog-wrap">`;
+  html+=`<div class="prog-grid" style="grid-template-columns:repeat(${cols},1fr)">`;
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const isWall=puz.walls.some(w=>w[0]===r&&w[1]===c);
+      const isHero=puz.hero[0]===r&&puz.hero[1]===c;
+      const isGoal=puz.goal[0]===r&&puz.goal[1]===c;
+      const cls=isWall?'pc-wall':isHero?'pc-hero':isGoal?'pc-goal':'';
+      const icon=isWall?'🧱':isHero?'👧':isGoal?'🏆':'';
+      html+=`<div class="prog-cell ${cls}">${icon}</div>`;
+    }
+  }
+  html+='</div>';
+  html+='<div class="prog-opts">';
+  puz.opts.forEach((opt,i)=>{
+    html+=`<div class="prog-opt" data-idx="${i}" onclick="checkProg(this,${i},${puz.correct})">${opt}</div>`;
+  });
+  html+='</div></div>';
+  document.getElementById('qVisual').innerHTML=html;
+}
+
+function checkProg(el, idx, correct){
+  if(answered) return;
+  answered=true;
+  const fb=document.getElementById('feedbackArea');
+  if(idx===correct){
+    scoreCorrect++;
+    document.getElementById('scoreCorrect').textContent=scoreCorrect;
+    el.classList.add('po-ok');
+    fb.className='feedback-area correct';
+    fb.textContent='🎉 Đúng rồi! Nhân vật đến đích!';
+    speak('Đúng rồi! Nhân vật đến đích!');
+    launchFireworks();
+  } else {
+    scoreWrong++;
+    document.getElementById('scoreWrong').textContent=scoreWrong;
+    el.classList.add('po-err');
+    document.querySelectorAll('.prog-opt')[correct].classList.add('po-ok');
+    fb.className='feedback-area wrong';
+    fb.textContent='❌ Chưa đúng! Lệnh đúng là đáp án xanh!';
+    speak('Chưa đúng rồi!');
+  }
+}
+
+// ===================== D14 – HÌNH PHẲNG =====================
+const SHAPES=[
+  // --- Loại cũ: nhận biết hình ---
+  {type:'name', name:'hình vuông', sides:4,
+   svg:`<svg viewBox="0 0 280 280"><rect x="40" y="40" width="200" height="200" fill="#ff8fab" stroke="#e91e8c" stroke-width="4" rx="4"/></svg>`,
+   hint:'Hình vuông có 4 cạnh bằng nhau và 4 góc vuông nhé!'},
+  {type:'name', name:'hình chữ nhật', sides:4,
+   svg:`<svg viewBox="0 0 280 200"><rect x="20" y="30" width="240" height="140" fill="#ffd54f" stroke="#ffb300" stroke-width="4" rx="4"/></svg>`,
+   hint:'Hình chữ nhật có 4 cạnh và 4 góc vuông, nhưng 2 cạnh dài hơn 2 cạnh kia!'},
+  {type:'name', name:'hình tam giác', sides:3,
+   svg:`<svg viewBox="0 0 280 260"><polygon points="140,20 270,240 10,240" fill="#a78bfa" stroke="#7c3aed" stroke-width="4"/></svg>`,
+   hint:'Hình tam giác có 3 cạnh và 3 góc nhé!'},
+  {type:'name', name:'hình tròn', sides:0,
+   svg:`<svg viewBox="0 0 280 280"><circle cx="140" cy="140" r="120" fill="#86efac" stroke="#22c55e" stroke-width="4"/></svg>`,
+   hint:'Hình tròn không có cạnh, được tạo bởi một đường cong khép kín!'},
+  {type:'name', name:'hình thoi', sides:4,
+   svg:`<svg viewBox="0 0 280 280"><polygon points="140,20 260,140 140,260 20,140" fill="#fca5a5" stroke="#ef4444" stroke-width="4"/></svg>`,
+   hint:'Hình thoi có 4 cạnh bằng nhau nhưng các góc không vuông!'},
+  {type:'name', name:'hình lục giác', sides:6,
+   svg:`<svg viewBox="0 0 280 280"><polygon points="140,20 240,80 240,200 140,260 40,200 40,80" fill="#fde047" stroke="#ffb300" stroke-width="4"/></svg>`,
+   hint:'Hình lục giác có 6 cạnh và 6 góc — như tổ ong nhé!'},
+
+  // --- Loại mới: đếm số hình lồng nhau ---
+  {type:'count', name:'vòng tròn lồng nhau', correct:3,
+   svg:`<svg viewBox="0 0 280 280">
+     <circle cx="140" cy="140" r="120" fill="none" stroke="#e91e8c" stroke-width="3"/>
+     <circle cx="140" cy="140" r="80"  fill="none" stroke="#a78bfa" stroke-width="3"/>
+     <circle cx="140" cy="140" r="40"  fill="none" stroke="#22c55e" stroke-width="3"/>
+   </svg>`,
+   hint:'Con đếm từng vòng tròn một nhé — từ ngoài vào trong!'},
+  {type:'count', name:'hình vuông lồng nhau', correct:4,
+   svg:`<svg viewBox="0 0 280 280">
+     <rect x="10"  y="10"  width="260" height="260" fill="none" stroke="#e91e8c" stroke-width="3"/>
+     <rect x="45"  y="45"  width="190" height="190" fill="none" stroke="#a78bfa" stroke-width="3"/>
+     <rect x="80"  y="80"  width="120" height="120" fill="none" stroke="#22c55e" stroke-width="3"/>
+     <rect x="115" y="115" width="50"  height="50"  fill="none" stroke="#ffb300" stroke-width="3"/>
+   </svg>`,
+   hint:'Con đếm từng hình vuông một nhé — từ ngoài vào trong!'},
+
+  {type:'count', name:'hình tam giác', correct:3,
+ svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 230">
+   <polygon points="150,20 290,215 10,215" fill="none" stroke="#333" stroke-width="3"/>
+   <line x1="150" y1="20"  x2="150" y2="215" stroke="#333" stroke-width="2.5"/>
+   <line x1="80"  y1="118" x2="220" y2="118" stroke="#333" stroke-width="2.5"/>
+ </svg>`,
+ hint:'Con đếm 2 tam giác nhỏ bên trong, rồi đếm cả tam giác to bên ngoài nữa nhé!'},
+
+
+  {type:'count', name:'hình chữ nhật lồng nhau', correct:3,
+   svg:`<svg viewBox="0 0 280 200">
+     <rect x="5"  y="5"  width="270" height="190" fill="none" stroke="#e91e8c" stroke-width="3"/>
+     <rect x="35" y="30" width="210" height="140" fill="none" stroke="#a78bfa" stroke-width="3"/>
+     <rect x="70" y="58" width="140" height="84"  fill="none" stroke="#22c55e" stroke-width="3"/>
+   </svg>`,
+   hint:'Con đếm từng hình chữ nhật một nhé — từ ngoài vào trong!'},
+     // --- Thêm: hình tròn lồng nhau 4 vòng ---
+  {type:'count', name:'vòng tròn lồng nhau', correct:4,
+   svg:`<svg viewBox="0 0 280 280">
+     <circle cx="140" cy="140" r="125" fill="none" stroke="#e91e8c" stroke-width="3"/>
+     <circle cx="140" cy="140" r="90"  fill="none" stroke="#a78bfa" stroke-width="3"/>
+     <circle cx="140" cy="140" r="55"  fill="none" stroke="#22c55e" stroke-width="3"/>
+     <circle cx="140" cy="140" r="22"  fill="none" stroke="#ffb300" stroke-width="3"/>
+   </svg>`,
+   hint:'Con đếm từng vòng tròn một nhé — từ ngoài vào trong!'},
+
+  // --- Thêm: hình vuông lồng nhau 3 cái ---
+  {type:'count', name:'hình vuông lồng nhau', correct:3,
+   svg:`<svg viewBox="0 0 280 280">
+     <rect x="10"  y="10"  width="260" height="260" fill="none" stroke="#e91e8c" stroke-width="3"/>
+     <rect x="55"  y="55"  width="170" height="170" fill="none" stroke="#a78bfa" stroke-width="3"/>
+     <rect x="100" y="100" width="80"  height="80"  fill="none" stroke="#22c55e" stroke-width="3"/>
+   </svg>`,
+   hint:'Con đếm từng hình vuông một nhé — từ ngoài vào trong!'},
+
+  // --- Thêm: tam giác lồng nhau 4 cái ---
+  {type:'count', name:'tam giác lồng nhau', correct:4,
+   svg:`<svg viewBox="0 0 280 260">
+     <polygon points="140,5 278,255 2,255"    fill="none" stroke="#e91e8c" stroke-width="3"/>
+     <polygon points="140,45 240,218 40,218"  fill="none" stroke="#a78bfa" stroke-width="3"/>
+     <polygon points="140,88 202,182 78,182"  fill="none" stroke="#22c55e" stroke-width="3"/>
+     <polygon points="140,128 168,148 112,148" fill="none" stroke="#ffb300" stroke-width="3"/>
+   </svg>`,
+   hint:'Con đếm từng tam giác một nhé — từ ngoài vào trong!'},
+
+  // --- Thêm: hình chữ nhật lồng nhau 4 cái ---
+  {type:'count', name:'hình chữ nhật lồng nhau', correct:4,
+   svg:`<svg viewBox="0 0 280 200">
+     <rect x="2"  y="2"  width="276" height="196" fill="none" stroke="#e91e8c" stroke-width="3"/>
+     <rect x="28" y="24" width="224" height="152" fill="none" stroke="#a78bfa" stroke-width="3"/>
+     <rect x="56" y="46" width="168" height="108" fill="none" stroke="#22c55e" stroke-width="3"/>
+     <rect x="84" y="68" width="112" height="64"  fill="none" stroke="#ffb300" stroke-width="3"/>
+   </svg>`,
+   hint:'Con đếm từng hình chữ nhật một nhé — từ ngoài vào trong!'},
+
+  // --- Thêm: đếm tam giác trong hình chữ nhật (như hình mẫu tam3.png) ---
+  {type:'count', name:'hình tam giác', correct:8,
+   svg:`<svg viewBox="0 0 320 200">
+     <rect x="10" y="10" width="300" height="180" fill="none" stroke="#333" stroke-width="2"/>
+     <line x1="10"  y1="10"  x2="310" y2="190" stroke="#333" stroke-width="2"/>
+     <line x1="310" y1="10"  x2="10"  y2="190" stroke="#333" stroke-width="2"/>
+     <line x1="160" y1="10"  x2="160" y2="190" stroke="#333" stroke-width="2"/>
+     <line x1="10"  y1="100" x2="310" y2="100" stroke="#333" stroke-width="2"/>
+   </svg>`,
+   hint:'Con đếm cả tam giác nhỏ lẫn tam giác to được ghép từ nhiều phần nhé!'},
+
+  // --- Thêm: đếm tam giác trong tam giác lớn (như hình mẫu tam2.jpg) ---
+  {type:'count', name:'hình tam giác', correct:9,
+   svg:`<svg viewBox="0 0 280 260">
+     <!-- Tam giác ngoài -->
+     <polygon points="10,250 140,10 270,250" fill="none" stroke="#333" stroke-width="2"/>
+     <!-- Đường ngang chia đôi -->
+     <line x1="75" y1="130" x2="205" y2="130" stroke="#333" stroke-width="2"/>
+     <!-- 2 đường dọc từ đỉnh xuống đáy -->
+     <line x1="95"  y1="10"  x2="55"  y2="250" stroke="#333" stroke-width="2"/>
+     <line x1="140" y1="10"  x2="140" y2="250" stroke="#333" stroke-width="2"/>
+     <line x1="185" y1="10"  x2="225" y2="250" stroke="#333" stroke-width="2"/>
+   </svg>`,
+   hint:'Con đếm từng tam giác nhỏ trước (1,2,3...) rồi đếm thêm các tam giác to được ghép lại nhé!'},
+     // --- hinh2: hình chữ nhật chia bởi 2 đường chéo + đường dọc giữa ---
+  {type:'count', name:'hình tam giác', correct:8,
+   svg:`<svg viewBox="0 0 320 180">
+     <!-- Hình chữ nhật ngoài -->
+     <rect x="10" y="10" width="300" height="160" fill="none" stroke="#333" stroke-width="2.5"/>
+     <!-- Đường dọc chia đôi -->
+     <line x1="160" y1="10" x2="160" y2="170" stroke="#333" stroke-width="2"/>
+     <!-- Đường chéo trái: góc trên trái → góc dưới phải của nửa trái -->
+     <line x1="10" y1="10" x2="160" y2="170" stroke="#333" stroke-width="2"/>
+     <!-- Đường chéo phải: góc trên phải → góc dưới trái của nửa phải -->
+     <line x1="310" y1="10" x2="160" y2="170" stroke="#333" stroke-width="2"/>
+     <!-- Đường chéo ngược trái -->
+     <line x1="10" y1="170" x2="160" y2="10" stroke="#333" stroke-width="2"/>
+     <!-- Đường chéo ngược phải -->
+     <line x1="310" y1="170" x2="160" y2="10" stroke="#333" stroke-width="2"/>
+   </svg>`,
+   hint:'Con đếm từng tam giác nhỏ trước, rồi tìm thêm các tam giác to được ghép từ 2 phần nhé! Đừng bỏ sót!'},
+
+  // --- hinh3: tam giác lớn chia 4 tam giác nhỏ bằng đường nối trung điểm ---
+  {type:'count', name:'hình tam giác', correct:5,
+ svg:`<svg viewBox="0 0 280 240" width="100%" height="auto" style="display:block;margin:0 auto;max-width:260px">
+   <polygon points="140,15 265,225 15,225" fill="none" stroke="#3333cc" stroke-width="2.5"/>
+   <line x1="77"  y1="120" x2="203" y2="120" stroke="#3333cc" stroke-width="2"/>
+   <line x1="77"  y1="120" x2="140" y2="225" stroke="#3333cc" stroke-width="2"/>
+   <line x1="203" y1="120" x2="140" y2="225" stroke="#3333cc" stroke-width="2"/>
+ </svg>`,
+ hint:'Con đếm 4 tam giác nhỏ bên trong, rồi đừng quên tam giác to bên ngoài nữa nhé!'},
+
+
+  // --- hinh4: tam giác ABC có 2 đường từ đỉnh A xuống đáy tại D và E ---
+  {type:'count', name:'hình tam giác', correct:6,
+   svg:`<svg viewBox="0 0 300 260">
+     <!-- Tam giác lớn ABC: B=trái dưới, C=phải dưới, A=đỉnh trên -->
+     <polygon points="150,15 20,245 280,245" fill="none" stroke="#333" stroke-width="2.5"/>
+     <!-- D chia BC: khoảng 1/3 từ B, E khoảng 2/3 từ B -->
+     <!-- B=20,245  C=280,245  D=107,245  E=194,245 -->
+     <!-- Đường AD từ A xuống D -->
+     <line x1="150" y1="15" x2="107" y2="245" stroke="#333" stroke-width="2"/>
+     <!-- Đường AE từ A xuống E -->
+     <line x1="150" y1="15" x2="194" y2="245" stroke="#333" stroke-width="2"/>
+     <!-- Nhãn điểm -->
+     <text x="145" y="10"  font-size="14" fill="#333" font-weight="bold">A</text>
+     <text x="5"   y="258" font-size="14" fill="#333" font-weight="bold">B</text>
+     <text x="100" y="258" font-size="14" fill="#333" font-weight="bold">D</text>
+     <text x="188" y="258" font-size="14" fill="#333" font-weight="bold">E</text>
+     <text x="272" y="258" font-size="14" fill="#333" font-weight="bold">C</text>
+   </svg>`,
+   hint:'Con đếm từng phần nhỏ: ABD, ADE, AEC. Rồi ghép lại: ABE, ADC, ABC — tổng cộng được mấy tam giác?'},
+
+
+];
+
+
+function genD14(){
+  const shape=pick(SHAPES);
+
+  if(shape.type==='count'){
+    // Loại đếm số hình lồng nhau
+    const correct=shape.correct;
+    const pool=[1,2,3,4,5,6,7,8,9,10].filter(x=>x!==correct);
+    const answers=shuffle([correct,...shuffle(pool).slice(0,3)]);
+    const visual=`<div class="shape-wrap">${shape.svg}</div>`;
+    setQuestion('🔷 Hình phẳng',
+      `Có bao nhiêu ${shape.name} trong hình?`,
+      visual, shape.hint, correct, answers, false, false);
+
+  } else {
+    // Loại nhận biết tên hình hoặc đếm cạnh
+    const askSides=shape.sides>0 && Math.random()>.5;
+    let q, correct, answers;
+    if(askSides){
+      q='Hình này có bao nhiêu cạnh?';
+      correct=shape.sides;
+      const pool=[0,3,4,5,6,8].filter(x=>x!==correct);
+      answers=shuffle([correct,...shuffle(pool).slice(0,3)]);
+    } else {
+      q='Đây là hình gì?';
+      correct=shape.name;
+      const others=SHAPES.filter(s=>s.name!==shape.name&&s.type==='name').map(s=>s.name);
+      answers=shuffle([correct,...shuffle(others).slice(0,3)]);
+    }
+    const visual=`<div class="shape-wrap">${shape.svg}</div>`;
+    setQuestion('🔷 Hình phẳng', q, visual, shape.hint, correct, answers, false, false);
+  }
+}
+
+
+// ===================== D15 – KHỐI 3D =====================
+const SOLIDS=[
+  {name:'khối lập phương',
+   svg:`<svg viewBox="0 0 280 260">
+     <polygon points="60,180 60,80 150,30 150,130" fill="#ff8fab" stroke="#e91e8c" stroke-width="2"/>
+     <polygon points="60,180 150,130 240,180 150,230" fill="#fce4ec" stroke="#e91e8c" stroke-width="2"/>
+     <polygon points="150,30 240,80 240,180 150,130" fill="#f8bbd0" stroke="#e91e8c" stroke-width="2"/>
+   </svg>`,
+   faces:6, hint:'Khối lập phương có 6 mặt vuông bằng nhau — như viên xúc xắc nhé!'},
+  {name:'khối cầu',
+   svg:`<svg viewBox="0 0 280 280">
+     <defs><radialGradient id="sg" cx="40%" cy="35%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#a78bfa"/></radialGradient></defs>
+     <circle cx="140" cy="140" r="120" fill="url(#sg)" stroke="#7c3aed" stroke-width="2"/>
+     <ellipse cx="140" cy="140" rx="120" ry="30" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6,4"/>
+   </svg>`,
+   faces:0, hint:'Khối cầu không có mặt phẳng — như quả bóng tròn nhé!'},
+  {name:'khối trụ',
+   svg:`<svg viewBox="0 0 280 280">
+     <rect x="60" y="80" width="160" height="140" fill="#fde047" stroke="#ffb300" stroke-width="2"/>
+     <ellipse cx="140" cy="80" rx="80" ry="22" fill="#fef9c3" stroke="#ffb300" stroke-width="2"/>
+     <ellipse cx="140" cy="220" rx="80" ry="22" fill="#fef08a" stroke="#ffb300" stroke-width="2"/>
+   </svg>`,
+   faces:3, hint:'Khối trụ có 2 mặt tròn (trên và dưới) và 1 mặt cong — như lon nước nhé!'},
+  {name:'khối nón',
+   svg:`<svg viewBox="0 0 280 280">
+     <polygon points="140,30 40,230 240,230" fill="#86efac" stroke="#22c55e" stroke-width="2"/>
+     <ellipse cx="140" cy="230" rx="100" ry="22" fill="#bbf7d0" stroke="#22c55e" stroke-width="2"/>
+   </svg>`,
+   faces:2, hint:'Khối nón có 1 mặt tròn ở đáy và 1 mặt cong — như cái phễu nhé!'},
+     // --- Loại mới: đếm số khối lập phương ---
+  {type:'count', name:'khối lập phương', correct:5,
+   svg:`<svg viewBox="0 0 300 200">
+     <!-- Hàng dưới: 3 khối -->
+     <g transform="translate(20,80)">
+       <polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/>
+       <polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/>
+       <polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/>
+     </g>
+     <g transform="translate(60,80)">
+       <polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/>
+       <polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/>
+       <polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/>
+     </g>
+     <g transform="translate(100,80)">
+       <polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/>
+       <polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/>
+       <polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/>
+     </g>
+     <!-- Hàng trên: 2 khối -->
+     <g transform="translate(40,40)">
+       <polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/>
+       <polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/>
+       <polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/>
+     </g>
+     <g transform="translate(80,40)">
+       <polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/>
+       <polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/>
+       <polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/>
+     </g>
+   </svg>`,
+   hint:'Con đếm từng khối một nhé! Hàng dưới mấy khối? Hàng trên mấy khối? Cộng lại!'},
+  {type:'count', name:'khối lập phương', correct:6,
+   svg:`<svg viewBox="0 0 320 220">
+     <!-- Hàng dưới: 3 khối -->
+     <g transform="translate(20,100)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(60,100)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(100,100)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <!-- Hàng giữa: 2 khối -->
+     <g transform="translate(40,60)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(80,60)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <!-- Hàng trên: 1 khối -->
+     <g transform="translate(60,20)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+   </svg>`,
+   hint:'Con đếm từng hàng nhé! Hàng dưới, hàng giữa, hàng trên — cộng lại!'},
+     // --- Thêm: đếm 4 khối hàng ngang ---
+  {type:'count', name:'khối lập phương', correct:4,
+   svg:`<svg viewBox="0 0 320 160">
+     <g transform="translate(10,40)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(50,40)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(90,40)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(130,40)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+   </svg>`,
+   hint:'Con đếm từng khối từ trái sang phải nhé!'},
+
+  // --- Thêm: hình chữ L (như hình P trong ảnh mẫu) ---
+  {type:'count', name:'khối lập phương', correct:7,
+   svg:`<svg viewBox="0 0 280 240">
+     <!-- Hàng dưới: 3 khối ngang -->
+     <g transform="translate(10,120)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(50,120)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(90,120)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <!-- Cột trái: thêm 2 khối lên trên -->
+     <g transform="translate(10,80)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(10,40)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(10,0)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <!-- Cột phải: thêm 1 khối lên trên -->
+     <g transform="translate(90,80)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+   </svg>`,
+   hint:'Con đếm từng cột nhé! Cột trái mấy khối? Hàng dưới còn lại mấy khối? Cộng lại!'},
+
+  // --- Thêm: hình tháp 3 tầng (1+2+3) ---
+  {type:'count', name:'khối lập phương', correct:6,
+   svg:`<svg viewBox="0 0 260 220">
+     <!-- Tầng dưới: 3 khối -->
+     <g transform="translate(10,120)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(50,120)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(90,120)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <!-- Tầng giữa: 2 khối -->
+     <g transform="translate(30,80)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(70,80)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <!-- Tầng trên: 1 khối -->
+     <g transform="translate(50,40)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+   </svg>`,
+   hint:'Tầng dưới mấy khối? Tầng giữa mấy khối? Tầng trên mấy khối? Cộng lại nhé!'},
+
+  // --- Thêm: hình chữ U ---
+  {type:'count', name:'khối lập phương', correct:8,
+   svg:`<svg viewBox="0 0 300 200">
+     <!-- Hàng dưới: 4 khối -->
+     <g transform="translate(10,100)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(50,100)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(90,100)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(130,100)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <!-- Cột trái: 2 khối lên trên -->
+     <g transform="translate(10,60)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(10,20)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <!-- Cột phải: 2 khối lên trên -->
+     <g transform="translate(130,60)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+     <g transform="translate(130,20)"><polygon points="0,60 40,80 40,40 0,20" fill="#f8bbd0" stroke="#e91e8c" stroke-width="1.5"/><polygon points="0,20 40,0 80,20 40,40" fill="#ff8fab" stroke="#e91e8c" stroke-width="1.5"/><polygon points="40,40 80,20 80,60 40,80" fill="#fce4ec" stroke="#e91e8c" stroke-width="1.5"/></g>
+   </svg>`,
+   hint:'Con đếm hàng dưới trước, rồi đếm thêm 2 cột bên trái và bên phải nhé!'},
+
+
+];
+
+function genD15(){
+  const solid=pick(SOLIDS);
+
+  if(solid.type==='count'){
+    const correct=solid.correct;
+    const pool=[2,3,4,5,6,7,8].filter(x=>x!==correct);
+    const answers=shuffle([correct,...shuffle(pool).slice(0,3)]);
+    const visual=`<div class="cube-wrap">${solid.svg}</div>`;
+    setQuestion('🧊 Khối 3D',
+      'Có bao nhiêu khối lập phương?',
+      visual, solid.hint, correct, answers, false, false);
+
+  } else {
+    const askFaces=solid.faces>0 && Math.random()>.5;
+    let q, correct, answers;
+    if(askFaces){
+      q='Khối này có bao nhiêu mặt?';
+      correct=solid.faces;
+      const pool=[0,2,3,4,5,6].filter(x=>x!==correct);
+      answers=shuffle([correct,...shuffle(pool).slice(0,3)]);
+    } else {
+      q='Đây là khối gì?';
+      correct=solid.name;
+      const others=SOLIDS.filter(s=>s.name!==solid.name&&s.type!=='count').map(s=>s.name);
+      answers=shuffle([correct,...shuffle(others).slice(0,3)]);
+    }
+    const visual=`<div class="cube-wrap">${solid.svg}</div>`;
+    setQuestion('🧊 Khối 3D', q, visual, solid.hint, correct, answers, false, false);
+  }
+}
+
+
+// ===================== PATCH nextQuestion =====================
+// Ghi đè hàm nextQuestion gốc để thêm case 9-15
+// (Milestone 1 dùng switch/case — mình extend thêm)
+const _nextQuestion_orig=nextQuestion;
+nextQuestion=function(){
+  document.getElementById('hintBox').classList.remove('show');
+  document.getElementById('feedbackArea').className='feedback-area';
+  document.getElementById('feedbackArea').textContent='';
+  switch(currentType){
+    case 1:genD1();break;
+    case 2:genD2();break;
+    case 3:genD3();break;
+    case 4:genD4();break;
+    case 5:genD5();break;
+    case 6:genD6();break;
+    case 7:genD7();break;
+    case 8:genD8();break;
+    case 9: genD9(); break;
+    case 10:genD10();break;
+    case 11:genD11();break;
+    case 12:genD12();break;
+    case 13:genD13();break;
+    case 14:genD14();break;
+    case 15:genD15();break;
+  }
+};
+
+</script>
+<!-- ===== MINITEST BUTTON ===== -->
+<!-- Thêm nút này ngay sau thẻ đóng </div> của .score-bar -->
+<!--
+<button class="btn-minitest" onclick="openMinitest()">
+  🏆 Minitest 15 câu &nbsp;|&nbsp; 📋 Lịch sử & Điểm yếu
+</button>
+-->
+
+<style>
+/* --- Nút Minitest --- */
+.btn-minitest{
+  display:block;width:100%;padding:14px;border:none;border-radius:16px;
+  font-size:1rem;font-weight:800;cursor:pointer;margin-bottom:14px;
+  background:linear-gradient(135deg,#ffd54f,#ff8fab,#a78bfa);
+  color:#fff;box-shadow:0 4px 16px rgba(233,30,140,.25);
+  letter-spacing:.5px;transition:transform .15s}
+.btn-minitest:active{transform:scale(.96)}
+/* --- Modal overlay --- */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:200;display:flex;align-items:center;justify-content:center;
+  padding:16px;backdrop-filter:blur(4px)}
+.modal-overlay.hidden{display:none}
+.modal-card{background:#fff;border-radius:24px;padding:24px 20px;
+  max-width:520px;width:100%;max-height:90vh;overflow-y:auto;
+  box-shadow:0 8px 40px rgba(0,0,0,.18)}
+.modal-title{font-size:1.25rem;font-weight:800;color:#e91e8c;
+  margin-bottom:4px;text-align:center}
+.modal-sub{font-size:.85rem;color:#888;text-align:center;margin-bottom:16px}
+
+/* --- Progress --- */
+.mt-progress{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.mt-prog-bar{flex:1;height:10px;background:#f3f4f6;border-radius:8px;overflow:hidden}
+.mt-prog-fill{height:100%;background:linear-gradient(90deg,#ff8fab,#a78bfa);
+  border-radius:8px;transition:width .4s}
+.mt-prog-label{font-size:.8rem;font-weight:700;color:#7c3aed;white-space:nowrap}
+
+/* --- Câu hỏi --- */
+.mt-tab-badge{display:inline-block;background:linear-gradient(135deg,#fce4ec,#f3e8ff);
+  color:#e91e8c;font-size:.75rem;font-weight:700;padding:3px 12px;
+  border-radius:20px;margin-bottom:8px}
+.mt-qtext{font-size:1.05rem;font-weight:700;color:#333;
+  margin-bottom:14px;line-height:1.5;text-align:center;
+  background:linear-gradient(135deg,#fce4ec,#f3e8ff);
+  border-radius:14px;padding:14px}
+.mt-answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.mt-ans-btn{padding:16px 8px;border:2px solid #f3f4f6;border-radius:14px;
+  font-size:1.1rem;font-weight:800;cursor:pointer;
+  background:rgba(255,255,255,.9);color:#333;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);transition:all .2s}
+.mt-ans-btn:active{transform:scale(.95)}
+.mt-ans-btn.mt-correct{background:linear-gradient(135deg,#bbf7d0,#86efac)!important;
+  border-color:#22c55e!important;color:#15803d!important}
+.mt-ans-btn.mt-wrong{background:linear-gradient(135deg,#fecaca,#fca5a5)!important;
+  border-color:#ef4444!important;color:#b91c1c!important}
+.mt-feedback{text-align:center;font-size:.92rem;font-weight:700;
+  min-height:28px;margin-bottom:8px}
+.mt-feedback.ok{color:#15803d}.mt-feedback.err{color:#b91c1c}
+
+/* --- Kết quả --- */
+.mt-result{text-align:center;padding:8px 0}
+.mt-result-score{font-size:2.6rem;font-weight:800;color:#e91e8c;margin-bottom:4px}
+.mt-result-label{font-size:1rem;color:#555;margin-bottom:14px}
+.mt-stars{font-size:2rem;margin-bottom:10px;letter-spacing:4px}
+
+/* --- Điểm yếu --- */
+.weak-section{background:linear-gradient(135deg,#fef9c3,#fce4ec);
+  border-radius:16px;padding:14px;margin-bottom:14px;text-align:left}
+.weak-title{font-size:.9rem;font-weight:800;color:#b45309;margin-bottom:8px;
+  display:flex;align-items:center;gap:6px}
+.weak-list{display:flex;flex-direction:column;gap:6px}
+.weak-item{display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,.75);border-radius:10px;padding:7px 12px;
+  font-size:.85rem;font-weight:700}
+.weak-item-label{color:#555}
+.weak-item-badge{background:#ef4444;color:#fff;border-radius:8px;
+  padding:2px 8px;font-size:.75rem;font-weight:800}
+.weak-none{font-size:.85rem;color:#22c55e;font-weight:700;
+  text-align:center;padding:6px 0}
+
+/* --- Lịch sử --- */
+.history-section{margin-top:16px;border-top:2px dashed #f8bbd0;padding-top:14px}
+.history-title{font-size:.95rem;font-weight:800;color:#7c3aed;margin-bottom:10px;
+  display:flex;align-items:center;gap:6px}
+.history-empty{font-size:.85rem;color:#bbb;text-align:center;padding:8px 0}
+.history-list{display:flex;flex-direction:column;gap:8px}
+.history-item{background:linear-gradient(135deg,#f9fafb,#f3f4f6);
+  border-radius:12px;padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  border-left:4px solid #ff8fab}
+.history-item:nth-child(1){border-left-color:#ffd700}
+.history-item:nth-child(2){border-left-color:#c0c0c0}
+.history-item:nth-child(3){border-left-color:#cd7f32}
+.hi-left{display:flex;flex-direction:column;gap:3px}
+.hi-date{font-size:.72rem;color:#aaa;font-weight:600}
+.hi-detail{font-size:.82rem;color:#555;font-weight:600}
+.hi-weak{font-size:.72rem;color:#ef4444;font-weight:600;margin-top:2px}
+.hi-right{text-align:right}
+.hi-score{font-size:1.1rem;font-weight:800;color:#e91e8c}
+.hi-stars{font-size:.9rem}
+
+/* --- Nút --- */
+.mt-btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.mt-btn{padding:12px 22px;border:none;border-radius:14px;
+  font-size:.95rem;font-weight:700;cursor:pointer;transition:transform .15s}
+.mt-btn:active{transform:scale(.95)}
+.mt-btn-retry{background:linear-gradient(135deg,#ff8fab,#e91e8c);color:#fff}
+.mt-btn-close{background:linear-gradient(135deg,#f3f4f6,#e5e7eb);color:#555}
+
+@media(max-width:480px){
+  .mt-ans-btn{font-size:1rem;padding:13px 4px}
+  .modal-card{padding:18px 14px}
+}
+</style>
+
+<!-- Modal Minitest -->
+<div class="modal-overlay hidden" id="minitestModal">
+  <div class="modal-card">
+    <div class="modal-title">🏆 Minitest – Kiểm tra nhanh</div>
+    <div class="modal-sub" id="mtSub">15 câu · mỗi dạng 1 câu</div>
+
+    <!-- Progress bar -->
+    <div class="mt-progress" id="mtProgressWrap">
+      <div class="mt-prog-bar">
+        <div class="mt-prog-fill" id="mtProgFill" style="width:0%"></div>
+      </div>
+      <div class="mt-prog-label" id="mtProgLabel">0/15</div>
+    </div>
+
+    <!-- Khu vực câu hỏi -->
+    <div id="mtQuestionArea">
+      <div class="mt-tab-badge" id="mtTabBadge"></div>
+      <div class="mt-qtext" id="mtQText"></div>
+      <div id="mtVisual" style="display:none;margin-bottom:8px"></div> 
+      <div class="mt-answers" id="mtAnswers"></div>
+      <div class="mt-feedback" id="mtFeedback"></div>
+    </div>
+
+    <!-- Kết quả (ẩn lúc đầu) -->
+    <div class="hidden" id="mtResult">
+      <div class="mt-stars"   id="mtStars"></div>
+      <div class="mt-result-score" id="mtResultScore"></div>
+      <div class="mt-result-label" id="mtResultLabel"></div>
+
+      <!-- Điểm yếu -->
+      <div class="weak-section">
+        <div class="weak-title">⚠️ Dạng con cần luyện thêm</div>
+        <div id="mtWeakList"></div>
+      </div>
+
+      <!-- Lịch sử -->
+      <div class="history-section">
+        <div class="history-title">📋 Lịch sử 5 lần gần nhất</div>
+        <div id="historyList"></div>
+      </div>
+
+      <div class="mt-btn-row">
+        <button class="mt-btn mt-btn-retry" onclick="startMinitest()">🔄 Làm lại</button>
+        <button class="mt-btn mt-btn-close" onclick="closeMinitest()">✖ Đóng</button>
+      </div>
+    </div>
+
+    <!-- Nút thoát khi đang làm -->
+    <div style="text-align:center;margin-top:8px" id="mtCloseRow">
+      <button class="mt-btn mt-btn-close" onclick="closeMinitest()">✖ Thoát</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// MINITEST – 15 câu, mỗi dạng 1 câu, lưu điểm yếu
+// Dùng đúng biến/hàm của dự án:
+//   rnd, pick, shuffle, buildAnswers, EMOJIS, MAX_NUM,
+//   speak, launchFireworks
+// ============================================================
+
+const MT_TOTAL = 15;
+
+// Tên hiển thị cho từng dạng (khớp với TABS)
+const MT_TAB_LABELS = {
+  1:'🔢 Nhận biết',  2:'⚖️ So sánh',    3:'📈 Dãy số',
+  4:'🔄 Quy luật',   5:'➕ Cộng trừ',   6:'🔍 Số ẩn',
+  7:'🧩 Phân tách',  8:'🌳 Cây số',     9:'🔍 Lạc loài',
+  10:'🏋️ Cân nặng', 11:'🔗 Ghép cặp', 12:'🧮 Sudoku',
+  13:'💻 Lập trình', 14:'🔷 Hình phẳng',15:'🧊 Khối 3D'
+};
+
+// State minitest
+let mtQuestions = [];   // [{typeId, tabLabel, q, correct, answers}]
+let mtCurrent   = 0;
+let mtScore     = 0;
+let mtWrong     = [];   // [{typeId, tabLabel, q, correct}] — dạng làm sai
+let mtAnswered  = false;
+
+// ============================================================
+// LỊCH SỬ – localStorage
+// ============================================================
+function getHistory(){
+  try{ return JSON.parse(localStorage.getItem('xgn_mt_history')||'[]'); }
+  catch(e){ return []; }
+}
+function saveHistory(entry){
+  let h = getHistory();
+  h.unshift(entry);
+  if(h.length > 5) h = h.slice(0,5);
+  localStorage.setItem('xgn_mt_history', JSON.stringify(h));
+}
+function formatDate(ts){
+  const d=new Date(ts), p=n=>String(n).padStart(2,'0');
+  return `${p(d.getDate())}/${p(d.getMonth()+1)} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function getStars(score,total){
+  const p=score/total;
+  if(p>=0.9)return'⭐⭐⭐'; if(p>=0.6)return'⭐⭐'; return'⭐';
+}
+
+// ============================================================
+// SINH CÂU HỎI – mỗi typeId 1 câu, dạng text thuần (không SVG)
+// Dạng 9-15: sinh câu hỏi text đơn giản phù hợp minitest
+// ============================================================
+function genMTQ(typeId){
+  let q, correct, answers, tabLabel=MT_TAB_LABELS[typeId];
+
+  switch(typeId){
+
+   case 1:{
+  const n=rnd(1,MAX_NUM), em=pick(EMOJIS);
+
+  let fontSize, cols;
+  if(n<=10)      { fontSize='2rem';   cols=5;  }
+  else if(n<=20) { fontSize='1.5rem'; cols=10; }
+  else           { fontSize='1rem';   cols=10; }
+
+  let gridHTML=`<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:2px;margin:8px 0">`;
+  for(let i=0;i<n;i++){
+    gridHTML+=`<div style="font-size:${fontSize};text-align:center;line-height:1.2">${em}</div>`;
+  }
+  gridHTML+='</div>';
+
+  q=`Đếm được bao nhiêu ${em}?`;
+  correct=n;
+  answers=buildAnswers(n,1,MAX_NUM);
+  // KHÔNG return sớm — gán visualHTML vào biến rồi break
+  return {typeId, tabLabel, q, correct, answers, visualHTML:gridHTML};
+}
+
+
+    case 2:{ // So sánh
+      let a=rnd(1,MAX_NUM), b=rnd(1,MAX_NUM);
+      // Đảm bảo không luôn bằng nhau
+      if(a===b && Math.random()>.3) b=a+rnd(1,3);
+      if(b>MAX_NUM) b=MAX_NUM;
+      correct=a>b?'>':a<b?'<':'=';
+      q=`${a}  ___  ${b}
+Điền dấu đúng vào chỗ trống?`;
+      answers=shuffle(['>','<','=']);
+      break;
+    }
+    case 3:{ // Dãy số tăng/giảm
+      const inc=Math.random()>.5;
+      const start=rnd(1,MAX_NUM-4);
+      const seq=Array.from({length:5},(_,i)=>inc?start+i:start+(4-i));
+      const bi=rnd(1,3);
+      correct=seq[bi];
+      const display=seq.map((n,i)=>i===bi?'[ ? ]':n).join(' – ');
+      q=`Dãy số: ${display}
+Số còn thiếu là?`;
+      answers=buildAnswers(correct,1,MAX_NUM);
+      break;
+    }
+    case 4:{ // Quy luật
+      const step=pick([2,3,5,10]);
+      const maxS=Math.max(1,Math.floor((MAX_NUM-step*4)/2));
+      const start=rnd(1,maxS);
+      const seq=Array.from({length:5},(_,i)=>start+step*i);
+      if(seq[4]>MAX_NUM) return genMTQ(typeId);
+      const bi=rnd(1,4);
+      correct=seq[bi];
+      const display=seq.map((n,i)=>i===bi?'[ ? ]':n).join(' – ');
+      q=`Quy luật: ${display}
+Số còn thiếu là?`;
+      answers=buildAnswers(correct,1,MAX_NUM+10);
+      break;
+    }
+    case 5:{ // Cộng trừ
+      const isAdd=Math.random()>.4;
+      if(isAdd){
+        const a=rnd(1,Math.floor(MAX_NUM/2)), b=rnd(1,MAX_NUM-a);
+        correct=a+b; q=`${a} + ${b} = ?`;
+      } else {
+        const total=rnd(2,MAX_NUM), b=rnd(1,total-1);
+        correct=total-b; q=`${total} – ${b} = ?`;
+      }
+      answers=buildAnswers(correct,0,MAX_NUM);
+      break;
+    }
+    case 6:{ // Số ẩn
+      const t=rnd(1,3);
+      if(t===1){
+        const b=rnd(1,Math.floor(MAX_NUM/2));
+        correct=rnd(1,MAX_NUM-b);
+        q=`? + ${b} = ${correct+b}`;
+      } else if(t===2){
+        const a=rnd(2,MAX_NUM); correct=rnd(1,a-1);
+        q=`${a} – ? = ${a-correct}`;
+      } else {
+        const b=rnd(1,Math.floor(MAX_NUM/2)), c=rnd(1,MAX_NUM-b);
+        correct=c+b; q=`? – ${b} = ${c}`;
+      }
+      answers=buildAnswers(correct,1,MAX_NUM);
+      break;
+    }
+    case 7:{ // Phân tách
+      const a=rnd(1,Math.floor(MAX_NUM/2)), b=rnd(1,MAX_NUM-a);
+      const askTotal=Math.random()>.4;
+      correct=askTotal?a+b:b;
+      q=askTotal
+        ?`Nhóm A có ${a}, Nhóm B có ${b}.
+Tổng cộng là bao nhiêu?`
+        :`Tổng có ${a+b}, Nhóm A có ${a}.
+Nhóm B có bao nhiêu?`;
+      answers=buildAnswers(correct,1,MAX_NUM);
+      break;
+    }
+    case 8:{ // Cây số
+      const total=rnd(3,Math.min(MAX_NUM,20));
+      const left=rnd(1,total-1), right=total-left;
+      const t=rnd(0,2);
+      if(t===0){correct=total; q=`Cây số:
+    [ ? ]
+   /     \
+  ${left}       ${right}
+Số ở đỉnh là?`;}
+      else if(t===1){correct=left; q=`Cây số:
+    ${total}
+   /     \
+[ ? ]     ${right}
+Nhánh trái là?`;}
+      else{correct=right; q=`Cây số:
+    ${total}
+   /     \
+  ${left}    [ ? ]
+Nhánh phải là?`;}
+      answers=buildAnswers(correct,1,MAX_NUM);
+      break;
+    }
+    case 9:{ // Lạc loài – text
+      const grp=pick(ODD_GROUPS);
+      const mainItems=shuffle([...grp.items]).slice(0,3);
+      const oddItem=pick(grp.odd);
+      const all=shuffle([...mainItems,oddItem]);
+      correct=oddItem;
+      q=`Hình nào không thuộc nhóm ${grp.name}?
+${all.join('  ')}`;
+      answers=shuffle(all);
+      break;
+    }
+    case 10:{ // Cân nặng – text
+      const pair=pick(SCALE_PAIRS);
+      correct=`${pair.heavy} ${pair.heavyName}`;
+      q=`Cái nào nặng hơn?
+${pair.heavy} ${pair.heavyName}  vs  ${pair.light} ${pair.lightName}`;
+      answers=shuffle([
+        `${pair.heavy} ${pair.heavyName}`,
+        `${pair.light} ${pair.lightName}`
+      ]);
+      break;
+    }
+    case 11:{ // Ghép cặp – text (hỏi 1 cặp)
+      const data=pick(MATCH_SETS);
+      const pair=pick(data.pairs);
+      // Đếm số emoji trong pair.l
+      const cnt=parseInt(pair.r);
+      correct=pair.r;
+      q=`${pair.l}
+Nhóm trên có bao nhiêu hình?`;
+      answers=buildAnswers(cnt,1,6).map(String);
+      correct=pair.r; // giữ dạng string
+      break;
+    }
+    case 12:{ // Sudoku – hỏi 1 ô
+      const emojis=pick(SUDOKU_SETS);
+      const tmpl=pick(SUDOKU_TEMPLATES);
+      // Chọn 1 ô ngẫu nhiên, hỏi hình nào điền vào
+      const r=rnd(0,3), c=rnd(0,3);
+      correct=emojis[tmpl[r][c]];
+      // Lấy hàng và cột đã biết
+      const rowKnown=tmpl[r].filter((_,ci)=>ci!==c).map(v=>emojis[v]);
+      const colKnown=tmpl.filter((_,ri)=>ri!==r).map(row=>emojis[row[c]]);
+      q=`Lưới Sudoku 4x4 dùng: ${emojis.join(' ')}
+Hàng đã có: ${rowKnown.join(' ')}
+Cột đã có: ${colKnown.join(' ')}
+Ô trống cần điền hình nào?`;
+      answers=shuffle([...emojis]);
+      break;
+    }
+    case 13:{ // Lập trình – hỏi lệnh đúng
+      const puz=pick(PROG_PUZZLES);
+      correct=puz.opts[puz.correct];
+      q=`Lưới ${puz.grid.length}x${puz.grid[0].length}: 👧 xuất phát, 🏆 là đích, 🧱 là tường.
+${puz.hint}
+Chọn chuỗi lệnh đúng:`;
+      answers=shuffle([...puz.opts]);
+      break;
+    }
+    case 14:{ // Hình phẳng – nhận biết tên
+      const nameShapes=SHAPES.filter(s=>s.type==='name');
+      const shape=pick(nameShapes);
+      correct=shape.name;
+      q=`Hình có ${shape.sides} cạnh${shape.sides===0?' (không có cạnh)':''} là hình gì?`;
+      const others=nameShapes.filter(s=>s.name!==shape.name).map(s=>s.name);
+      answers=shuffle([correct,...shuffle(others).slice(0,3)]);
+      break;
+    }
+    case 15:{ // Khối 3D – nhận biết tên
+      const nameS=SOLIDS.filter(s=>s.type!=='count');
+      const solid=pick(nameS);
+      correct=solid.name;
+      q=`Khối có ${solid.faces} mặt${solid.faces===0?' (không có mặt phẳng)':''} là khối gì?`;
+      const others=nameS.filter(s=>s.name!==solid.name).map(s=>s.name);
+      answers=shuffle([correct,...shuffle(others).slice(0,3)]);
+      break;
+    }
+  }
+  return {typeId, tabLabel, q, correct, answers};
+}
+
+function buildMTQuestions(){
+  // Mỗi dạng 1 câu, thứ tự ngẫu nhiên
+  const types=shuffle([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
+  return types.map(id=>genMTQ(id)).filter(Boolean);
+}
+
+// ============================================================
+// UI MINITEST
+// ============================================================
+function openMinitest(){
+  document.getElementById('minitestModal').classList.remove('hidden');
+  startMinitest();
+}
+function closeMinitest(){
+  document.getElementById('minitestModal').classList.add('hidden');
+  window.speechSynthesis&&window.speechSynthesis.cancel();
+}
+function startMinitest(){
+  mtQuestions=buildMTQuestions();
+  mtCurrent=0; mtScore=0; mtWrong=[]; mtAnswered=false;
+
+  document.getElementById('mtResult').classList.add('hidden');
+  document.getElementById('mtQuestionArea').style.display='';
+  document.getElementById('mtProgressWrap').style.display='';
+  document.getElementById('mtCloseRow').style.display='';
+  document.getElementById('mtSub').textContent='15 câu · mỗi dạng 1 câu';
+  renderMTQ();
+}
+
+function renderMTQ(){
+  if(mtCurrent>=mtQuestions.length){showMTResult();return;}
+  mtAnswered=false;
+  const item=mtQuestions[mtCurrent];
+
+  // Progress
+  const pct=(mtCurrent/MT_TOTAL)*100;
+  document.getElementById('mtProgFill').style.width=pct+'%';
+  document.getElementById('mtProgLabel').textContent=`${mtCurrent}/${MT_TOTAL}`;
+
+  // Badge dạng bài
+  document.getElementById('mtTabBadge').textContent=item.tabLabel;
+
+  // Câu hỏi (giữ xuống dòng)
+  document.getElementById('mtQText').style.whiteSpace='pre-line';
+  document.getElementById('mtQText').textContent=item.q;
+  const visualEl=document.getElementById('mtVisual');
+if(visualEl){
+  if(item && item.visualHTML){
+    visualEl.innerHTML=item.visualHTML;
+    visualEl.style.display='';
+  } else {
+    visualEl.innerHTML='';
+    visualEl.style.display='none';
+  }
+}
+  document.getElementById('mtFeedback').textContent='';
+  document.getElementById('mtFeedback').className='mt-feedback';
+
+  // Đáp án
+  const grid=document.getElementById('mtAnswers');
+  grid.innerHTML='';
+  const is3=item.answers.length===3;
+  grid.style.gridTemplateColumns=is3?'repeat(3,1fr)':'1fr 1fr';
+
+  item.answers.forEach(a=>{
+    const btn=document.createElement('button');
+    btn.className='mt-ans-btn';
+    btn.textContent=a;
+    btn.onclick=()=>checkMTAns(a,btn,item);
+    grid.appendChild(btn);
+  });
+}
+
+function checkMTAns(val,btn,item){
+  if(mtAnswered)return;
+  mtAnswered=true;
+  const fb=document.getElementById('mtFeedback');
+  const isOk=String(val)===String(item.correct);
+  if(isOk){
+    mtScore++;
+    btn.classList.add('mt-correct');
+    fb.className='mt-feedback ok';
+    fb.textContent='🎉 Đúng rồi!';
+    speak('Đúng rồi!');
+  } else {
+    // Lưu điểm yếu
+    mtWrong.push({typeId:item.typeId, tabLabel:item.tabLabel,
+                  q:item.q, correct:item.correct});
+    btn.classList.add('mt-wrong');
+    document.querySelectorAll('.mt-ans-btn').forEach(b=>{
+      if(String(b.textContent)===String(item.correct)) b.classList.add('mt-correct');
+    });
+    fb.className='mt-feedback err';
+    fb.textContent=`❌ Đáp án: ${item.correct}`;
+    speak('Chưa đúng rồi!');
+  }
+  setTimeout(()=>{mtCurrent++;renderMTQ();},1300);
+}
+
+// ============================================================
+// KẾT QUẢ + ĐIỂM YẾU + LỊCH SỬ
+// ============================================================
+function showMTResult(){
+  document.getElementById('mtProgFill').style.width='100%';
+  document.getElementById('mtProgLabel').textContent=`${MT_TOTAL}/${MT_TOTAL}`;
+  document.getElementById('mtQuestionArea').style.display='none';
+  document.getElementById('mtCloseRow').style.display='none';
+  document.getElementById('mtResult').classList.remove('hidden');
+
+  const stars=getStars(mtScore,MT_TOTAL);
+  const pct=Math.round(mtScore/MT_TOTAL*100);
+  let label;
+  if(pct>=90)      label='🏆 Xuất sắc! Con thật tuyệt vời!';
+  else if(pct>=70) label='👍 Giỏi lắm! Cố gắng thêm nhé!';
+  else if(pct>=50) label='💪 Được rồi! Luyện thêm nào!';
+  else             label='📚 Cần ôn thêm nhiều hơn nhé!';
+
+  document.getElementById('mtStars').textContent=stars;
+  document.getElementById('mtResultScore').textContent=`${mtScore} / ${MT_TOTAL}`;
+  document.getElementById('mtResultLabel').textContent=label;
+
+  // --- Điểm yếu ---
+  const weakEl=document.getElementById('mtWeakList');
+  if(mtWrong.length===0){
+    weakEl.innerHTML='<div class="weak-none">✅ Tuyệt vời! Không có dạng nào cần ôn thêm!</div>';
+  } else {
+    weakEl.className='weak-list';
+    weakEl.innerHTML=mtWrong.map(w=>`
+      <div class="weak-item">
+        <span class="weak-item-label">${w.tabLabel}</span>
+        <span class="weak-item-badge">Cần ôn</span>
+      </div>`).join('');
+  }
+
+  // --- Lưu lịch sử ---
+  const weakLabels=mtWrong.map(w=>w.tabLabel);
+  saveHistory({
+    ts:Date.now(), score:mtScore, total:MT_TOTAL,
+    stars, range:MAX_NUM,
+    weak: weakLabels
+  });
+  renderHistory();
+
+  if(mtScore>=11) launchFireworks();
+  speak(label);
+}
+
+function renderHistory(){
+  const h=getHistory();
+  const el=document.getElementById('historyList');
+  if(!h.length){
+    el.innerHTML='<div class="history-empty">Chưa có lần nào — hãy thử ngay!</div>';
+    return;
+  }
+  el.className='history-list';
+  el.innerHTML=h.map(item=>`
+    <div class="history-item">
+      <div class="hi-left">
+        <div class="hi-date">🕐 ${formatDate(item.ts)} &nbsp;|&nbsp; 0–${item.range||20}</div>
+        <div class="hi-detail">Đúng: <b>${item.score}</b> / ${item.total} &nbsp; ${item.stars}</div>
+        ${item.weak&&item.weak.length
+          ?`<div class="hi-weak">⚠️ Cần ôn: ${item.weak.slice(0,3).join(', ')}${item.weak.length>3?'...':''}</div>`
+          :'<div class="hi-weak" style="color:#22c55e">✅ Hoàn hảo!</div>'}
+      </div>
+      <div class="hi-right">
+        <div class="hi-score">${item.score}/${item.total}</div>
+        <div class="hi-stars">${item.stars}</div>
+      </div>
+    </div>`).join('');
+}
+</script>
+</body>
+</html>
