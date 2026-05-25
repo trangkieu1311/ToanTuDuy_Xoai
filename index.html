@@ -999,11 +999,20 @@ function genD8(){
   else if(askType===1){correct=left;q='Nhánh bên trái là bao nhiêu?';}
   else{correct=right;q='Nhánh bên phải là bao nhiêu?';}
 
-  const topEmoji=`<div class="tree-emoji-row">${emoji.repeat(Math.min(total,10))}</div>`;
-  const leftEmoji=askType===1?'':
-    `<div class="tree-emoji-row">${emoji.repeat(Math.min(left,8))}</div>`;
-  const rightEmoji=askType===2?'':
-    `<div class="tree-emoji-row">${emoji.repeat(Math.min(right,8))}</div>`;
+  // ✅ FIX: dùng Array.from thay vì .repeat()
+  function emojiRow(n, em){
+  const size = n>15 ? '1rem' : n>10 ? '1.3rem' : '1.5rem';
+  const cols = n>10 ? 10 : 5;
+  return `<div style="display:grid;grid-template-columns:repeat(${cols},1fr);
+    gap:2px;font-size:${size};text-align:center;margin:4px 0">
+    ${Array.from({length:n},()=>`<div>${em}</div>`).join('')}
+  </div>`;
+}
+
+const topEmoji   = emojiRow(total, emoji);           // ← bỏ Math.min
+const leftEmoji  = askType===1 ? '' : emojiRow(left,  emoji);  // ← bỏ Math.min
+const rightEmoji = askType===2 ? '' : emojiRow(right, emoji);  // ← bỏ Math.min
+
 
   const visual=`
     <div class="tree-wrap">
@@ -1026,6 +1035,7 @@ function genD8(){
   const ans=buildAnswers(correct,1,MAX_NUM);
   setQuestion('🌳 Tách gộp / Cây số',q,visual,hint,correct,ans,false,false);
 }
+
 
 // ===================== NEXT QUESTION =====================
 function nextQuestion(){
