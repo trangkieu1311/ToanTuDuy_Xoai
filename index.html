@@ -180,6 +180,49 @@
     border-radius:16px;padding:14px;margin-bottom:12px;font-size:.9rem;
     color:#78350f;line-height:1.6;display:none}
   .hint-box.show{display:block}
+/* ===== D5 – HINT ANIMATION ===== */
+@keyframes popBig{
+  0%  {transform:scale(1)}
+  60% {transform:scale(1.45)}
+  100%{transform:scale(1.35)}
+}
+@keyframes fadeOut{
+  0%  {opacity:1;transform:scale(1.35)}
+  100%{opacity:.2;text-decoration:line-through;transform:scale(1)}
+}
+.em-pop   {animation:popBig .4s ease forwards}
+.em-fading{animation:fadeOut .5s ease forwards;opacity:.2}
+
+.hint-anim-wrap{
+  display:flex;gap:20px;align-items:flex-start;
+  justify-content:center;flex-wrap:wrap;padding:8px 0
+}
+.hint-anim-box{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:rgba(255,255,255,.7);border-radius:16px;padding:12px 10px;
+  min-width:120px;max-width:none;flex:1;overflow:visible;
+  box-sizing:border-box;
+}
+
+
+.hint-anim-label{
+  font-size:.78rem;font-weight:800;color:#e91e8c
+}
+.hint-anim-grid{
+  display:grid;gap:3px;justify-items:center
+}
+.hint-em{
+  font-size:1.8rem;line-height:1.1;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .3s
+}
+.hint-em.hidden-init{
+  opacity:0;transform:scale(0)
+}
+.hint-highlight{
+  background:linear-gradient(135deg,#bbf7d0,#86efac)!important;
+  border:2px solid #22c55e;border-radius:12px;padding:4px
+}
 
   /* Canvas */
   #fireworks{position:fixed;inset:0;pointer-events:none;z-index:999}
@@ -245,22 +288,23 @@
 .match-progress{text-align:center;font-size:.9rem;font-weight:700;color:#7c3aed;margin-top:6px}
 
 /* ===== D12 – SUDOKU ===== */
-.sudoku-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0}
-.sudoku-grid{display:inline-grid;gap:3px;background:#ff8fab;padding:3px;border-radius:14px}
-.sudoku-cell{width:56px;height:56px;border-radius:8px;
+.sudoku-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0}
+.sudoku-grid{display:inline-grid;gap:5px;background:#ff8fab;padding:6px;border-radius:18px}
+.sudoku-cell{width:80px;height:80px;border-radius:12px;
   display:flex;align-items:center;justify-content:center;
-  font-size:1.9rem;cursor:pointer;background:rgba(255,255,255,.9);
+  font-size:2.8rem;cursor:pointer;background:rgba(255,255,255,.9);
   transition:all .2s;border:2px solid transparent}
 .sudoku-cell.sc-blank{background:linear-gradient(135deg,#fef9c3,#fde047);
   border:2px dashed #ffb300;animation:blink .8s ease-in-out infinite alternate}
 .sudoku-cell.sc-locked{background:linear-gradient(135deg,#f3f4f6,#e5e7eb);cursor:default}
-.sudoku-cell.sc-sel{outline:3px solid #e91e8c;outline-offset:1px}
-.sudoku-opts{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.sudoku-opt{width:52px;height:52px;border-radius:12px;
+.sudoku-cell.sc-sel{outline:4px solid #e91e8c;outline-offset:2px}
+.sudoku-opts{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.sudoku-opt{width:72px;height:72px;border-radius:14px;
   display:flex;align-items:center;justify-content:center;
-  font-size:1.9rem;cursor:pointer;background:rgba(255,255,255,.85);
+  font-size:2.6rem;cursor:pointer;background:rgba(255,255,255,.85);
   border:2px solid #ff8fab;transition:all .2s;user-select:none}
 .sudoku-opt:active{transform:scale(.93)}
+
 
 /* ===== D13 – LẬP TRÌNH ===== */
 .prog-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0}
@@ -301,8 +345,8 @@
 
 /* ===== RESPONSIVE D9-15 ===== */
 @media(max-width:768px){
-  .sudoku-cell{width:44px;height:44px;font-size:1.5rem}
-  .sudoku-opt{width:42px;height:42px;font-size:1.5rem}
+  .sudoku-cell{width:64px;height:64px;font-size:2.2rem}
+  .sudoku-opt{width:58px;height:58px;font-size:2rem}
   .prog-cell{width:48px;height:48px;font-size:1.6rem}
   .match-item{width:60px;height:60px;font-size:1.3rem}
   .odd-cell{font-size:2.2rem}
@@ -424,6 +468,9 @@ let scoreCorrect=0, scoreWrong=0;
 let currentAnswer=null, currentHint='', currentQuestion='';
 let currentQuestionTTS=''; // chuỗi TTS riêng cho câu hỏi (không có ?)
 let answered=false;
+// State riêng cho hint animation D5
+let d5HintData = null; // {isAdd, a, b, total, emoji, correct, hintType}
+
 
 // ===================== SPLASH =====================
 function initSplashEmoji(){
@@ -708,15 +755,305 @@ let currentIsFormulaQ=false;
 
 function readQuestion(){speak(currentQuestion, currentIsFormulaQ);}
 function showHint(){
+  // Nếu là D5 → chạy animation thay vì text hint
+  if(currentType===5 && d5HintData){
+    runD5HintAnim();
+    return;
+  }
   const box=document.getElementById('hintBox');
   box.textContent=currentHint;
   box.classList.add('show');
-  // Gợi ý luôn là text thường → không đọc ? thành bao nhiêu
   speak(currentHint, false);
 }
+
+// ===== ANIMATION HINT D5 =====
+function runD5HintAnim(){
+  const d=d5HintData;
+  const box=document.getElementById('hintBox');
+  box.innerHTML='';
+  box.classList.add('show');
+
+  // Tính cols cho grid
+  function makeGrid(n, em, idPrefix, hiddenFrom){
+    let cols, fontSize;
+    if(n <= 5)       { cols = n;    fontSize = '1.8rem'; }
+    else if(n <= 10) { cols = 5;    fontSize = '1.6rem'; }
+    else if(n <= 15) { cols = 5;    fontSize = '1.3rem'; }
+    else             { cols = 10;   fontSize = '1.1rem'; }
+
+    // ← SỬA: max-width động theo cols và fontSize
+    const cellSize = n > 15 ? 28 : n > 10 ? 34 : 40;
+    const maxW = Math.max(cols * cellSize + 24, 300);
+
+
+    let html=`<div class="hint-anim-grid" 
+      style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:4px;width:100%;max-width:${maxW}px;"
+      id="${idPrefix}Grid">`;
+
+    for(let i=0;i<n;i++){
+      const hidden = hiddenFrom!==undefined && i>=hiddenFrom;
+      html+=`<div class="hint-em${hidden?' hidden-init':''}" 
+        id="${idPrefix}Em${i}" 
+        style="font-size:${fontSize};padding:2px;line-height:1.3">${em}</div>`;
+    }
+    html+='</div>';
+    return html;
+}
+
+
+    // ── LOẠI C: Phép trừ ──────────────────────────────────────
+  if(d.hintType==='C'){
+    const total=d.total, sub=d.b, remain=d.correct;
+
+    // Render thẳng ra box vàng, không dùng hint-anim-box
+    const cls = total >= 30 ? 'per10' : 'per5';
+    let fontSize;
+    if(total >= 30)      fontSize = '1.5rem';
+    else if(total >= 20) fontSize = '1.8rem';
+    else if(total >= 10) fontSize = '2rem';
+    else                 fontSize = '2.4rem';
+
+    let gridHTML = `<div style="text-align:center;margin-bottom:8px;font-size:.85rem;font-weight:800;color:#e91e8c">Có ${total} hình — lấy đi ${sub}</div>`;
+    gridHTML += `<div class="hint-anim-grid" style="display:grid;grid-template-columns:repeat(${cls==='per10'?10:5},1fr);gap:6px;padding:4px;width:100%" id="hCGrid">`;
+    for(let i=0;i<total;i++){
+      gridHTML += `<div class="hint-em" id="hCEm${i}" style="font-size:${fontSize};line-height:1.2;text-align:center">${d.emoji}</div>`;
+    }
+    gridHTML += '</div>';
+
+    box.innerHTML = gridHTML;
+
+    speak(`Con có ${total} hình, bây giờ lấy đi ${sub}...`);
+
+    // Bước 1: phình to toàn bộ
+    setTimeout(()=>{
+      for(let i=0;i<total;i++)
+        document.getElementById(`hCEm${i}`)?.classList.add('em-pop');
+    }, 800);
+
+    // Bước 2: gạch mờ từng cái từ cuối, đọc đếm ngược
+        const countDown=[];
+    for(let i=total-1;i>=remain;i--) countDown.push(i);
+
+    // Delay mỗi bước tùy độ dài số đọc
+    const stepDelay = total >= 20 ? 1400 : total >= 10 ? 1000 : 700;
+
+    countDown.forEach((idx,step)=>{
+      setTimeout(()=>{
+        const el=document.getElementById(`hCEm${idx}`);
+        if(el){el.classList.remove('em-pop');el.classList.add('em-fading');}
+        speak(String(total-step-1));
+      }, 5500 + step*stepDelay);
+    });
+
+    // Bước 3: kết luận
+    setTimeout(()=>{
+      speak(`Còn lại ${remain}. Vậy ${total} trừ ${sub} bằng ${remain}!`);
+    }, 5500 + countDown.length*stepDelay + 400);
+    return;
+  }
+
+
+  // ── LOẠI A: Đếm tiếp (small ≤ 5) ─────────────────────────
+  if(d.hintType==='A'){
+    const big=d.big, small=d.small;
+    box.innerHTML=`
+      <div class="hint-anim-wrap">
+        <div class="hint-anim-box">
+          <div class="hint-anim-label">Nhóm ${big}</div>
+          ${makeGrid(big, d.emoji, 'hA')}
+        </div>
+        <div style="font-size:1.8rem;font-weight:800;color:#7c3aed;padding-top:20px">+</div>
+        <div class="hint-anim-box">
+          <div class="hint-anim-label">Đếm thêm ${small}</div>
+          ${makeGrid(small, d.emoji, 'hB', 0)}
+        </div>
+      </div>`;
+    // Bước 1: phình to nhóm big
+    speak(`Bên lớn hơn là ${big}, Con đã có ${big} rồi...giờ cộng thêm ${small} như sau, con đếm nào`);
+    setTimeout(()=>{
+      for(let i=0;i<big;i++)
+        document.getElementById(`hAEm${i}`)?.classList.add('em-pop');
+    },800);
+    // Bước 2: hiện từng cái nhóm small, đọc đếm tiếp
+    for(let i=0;i<small;i++){
+      setTimeout(()=>{
+        const el=document.getElementById(`hBEm${i}`);
+        if(el){
+          el.style.opacity='1';
+          el.style.transform='scale(0)';
+          el.style.transition='transform .35s ease';
+          requestAnimationFrame(()=>requestAnimationFrame(()=>{
+            el.style.transform='scale(1.4)';
+          }));
+        }
+        speak(String(big+i+1));
+      }, 8000 + i*750);
+    }
+    // Bước 3: kết luận
+    setTimeout(()=>{
+      speak(`Vậy ${big} cộng ${small} bằng ${d.correct}!`);
+    }, 8000 + small*750 + 500);
+    return;
+  }
+
+     // ── LOẠI B1: Số nhỏ cho sang số lớn ──────────────────────
+  if(d.hintType==='B1'){
+    const big=d.big, small=d.small;
+    const bigUnit=big%10;
+    const need=10-bigUnit;
+    const newBig=big+need;
+    const newSmall=small-need;
+
+    box.innerHTML=`
+      <div class="hint-anim-wrap">
+        <div class="hint-anim-box" id="hB1Left">
+          <div class="hint-anim-label" id="hB1LeftLbl">Nhóm ${big}</div>
+          ${makeGrid(big, d.emoji, 'hB1L')}
+          <div id="hB1LExtra"></div>
+        </div>
+        <div style="font-size:1.8rem;font-weight:800;color:#7c3aed;padding-top:20px">+</div>
+        <div class="hint-anim-box" id="hB1Right">
+          <div class="hint-anim-label" id="hB1RightLbl">Nhóm ${small}</div>
+          ${makeGrid(small, d.emoji, 'hB1R')}
+        </div>
+      </div>`;
+
+    // Bước 1: đọc câu giới thiệu + phình to nhóm big
+    speak(`Bên lớn hơn là ${big}, ta cần thêm ${need} để thành ${newBig}`);
+    setTimeout(()=>{
+      for(let i=0;i<big;i++)
+        document.getElementById(`hB1LEm${i}`)?.classList.add('em-pop');
+    }, 900);
+
+    // Bước 2: đọc câu chuyển + chạy animation (sau 3500ms)
+    setTimeout(()=>{
+      speak(`Ta chuyển ${need} từ ${small} sang, bên ${big} thành ${newBig}, bên ${small} kia còn lại ${newSmall}`);
+
+            // Chờ TTS câu 2 xong (6000ms) rồi mới chạy animation
+      setTimeout(()=>{
+
+        for(let i=0;i<need;i++){
+          setTimeout(()=>{
+            const rEl=document.getElementById(`hB1REm${small-1-i}`);
+            if(rEl) rEl.classList.add('em-fading');
+            const extra=document.getElementById('hB1LExtra');
+            if(extra){
+              const newEm=document.createElement('div');
+              newEm.className='hint-em hidden-init';
+              newEm.textContent=d.emoji;
+              extra.appendChild(newEm);
+              requestAnimationFrame(()=>requestAnimationFrame(()=>{
+                newEm.style.opacity='1';
+                newEm.style.transform='scale(1.4)';
+                newEm.style.transition='all .5s ease';
+              }));
+            }
+          }, i*700);
+        }
+        // Cập nhật label sau animation
+        setTimeout(()=>{
+          const ll=document.getElementById('hB1LeftLbl');
+          const rl=document.getElementById('hB1RightLbl');
+          if(ll) ll.textContent=`Nhóm ${newBig} ✅`;
+          if(rl) rl.textContent=`Nhóm ${newSmall}`;
+          if(ll) ll.classList.add('hint-highlight');
+        }, need*700+200);
+      }, 4000);
+
+    }, 5500);
+
+    // Bước 3: kết luận
+    setTimeout(()=>{
+      speak(`${big} cộng ${small} cũng bằng ${newBig} cộng ${newSmall}, đáp án là ${d.correct}!`);
+    }, 5500 + 6000 + need*700 + 800);
+    return;
+  }
+
+  // ── LOẠI B2: Số lớn cho bớt sang số nhỏ ──────────────────
+  if(d.hintType==='B2'){
+    const big=d.big, small=d.small;
+    const give=big%10;
+    const newBig=big-give;
+    const newSmall=small+give;
+
+    box.innerHTML=`
+      <div class="hint-anim-wrap">
+        <div class="hint-anim-box" id="hB2Left">
+          <div class="hint-anim-label" id="hB2LeftLbl">Nhóm ${big}</div>
+          ${makeGrid(big, d.emoji, 'hB2L')}
+        </div>
+        <div style="font-size:1.8rem;font-weight:800;color:#7c3aed;padding-top:20px">+</div>
+        <div class="hint-anim-box" id="hB2Right">
+          <div class="hint-anim-label" id="hB2RightLbl">Nhóm ${small}</div>
+          ${makeGrid(small, d.emoji, 'hB2R')}
+          <div id="hB2RExtra"></div>
+        </div>
+      </div>`;
+
+    // Bước 1: đọc câu giới thiệu + phình to nhóm big
+    speak(`Bên lớn hơn là ${big}, ta bỏ bớt ${give} để thành ${newBig}`);
+    setTimeout(()=>{
+      for(let i=0;i<big;i++)
+        document.getElementById(`hB2LEm${i}`)?.classList.add('em-pop');
+    }, 900);
+
+    // Bước 2: đọc câu chuyển + chạy animation (sau 3500ms)
+    setTimeout(()=>{
+      speak(`Ta chuyển ${give} từ ${big} sang, bên ${big} còn ${newBig}, bên ${small} thành ${newSmall}`);
+
+      // Chờ TTS câu 2 xong (4000ms) rồi mới chạy animation
+      setTimeout(()=>{
+        for(let i=0;i<give;i++){
+          setTimeout(()=>{
+            const lEl=document.getElementById(`hB2LEm${big-1-i}`);
+            if(lEl) lEl.classList.add('em-fading');
+            const extra=document.getElementById('hB2RExtra');
+            if(extra){
+              const newEm=document.createElement('div');
+              newEm.className='hint-em hidden-init';
+              newEm.textContent=d.emoji;
+              extra.appendChild(newEm);
+              requestAnimationFrame(()=>requestAnimationFrame(()=>{
+                newEm.style.opacity='1';
+                newEm.style.transform='scale(1.4)';
+                newEm.style.transition='all .5s ease';
+              }));
+            }
+          }, i*700);
+        }
+        // Cập nhật label sau animation
+        setTimeout(()=>{
+          const ll=document.getElementById('hB2LeftLbl');
+          const rl=document.getElementById('hB2RightLbl');
+          if(ll){ll.textContent=`Nhóm ${newBig} ✅`;ll.classList.add('hint-highlight');}
+          if(rl) rl.textContent=`Nhóm ${newSmall}`;
+        }, give*700+200);
+      }, 4000);
+
+    }, 5500);
+
+    // Bước 3: kết luận
+    setTimeout(()=>{
+      speak(`${big} cộng ${small} cũng bằng ${newBig} cộng ${newSmall}, đáp án là ${d.correct}!`);
+    }, 5500 + 6000 + give*700 + 800);
+    return;
+  }  // ← đóng if B2
+
+}  // ← đóng function runD5HintAnim
+
+
 function showAnswer(){
   if(currentAnswer===null) return;
-  // Sudoku/Ghép cặp không có ans-btn thông thường
+  if(currentAnswer==='prog'){
+    // D13: highlight đáp án đúng trong prog-opts
+    document.querySelectorAll('.prog-opt').forEach(b=>{
+      if(b.getAttribute('data-correct')==='true') b.classList.add('po-ok');
+    });
+    document.getElementById('feedbackArea').className='feedback-area correct';
+    document.getElementById('feedbackArea').textContent='🎯 Đáp án xanh là đường đi đúng!';
+    speak('Xem đáp án màu xanh nhé!');
+    return;
+  }
   if(currentAnswer==='done'){
     document.getElementById('feedbackArea').className='feedback-area correct';
     document.getElementById('feedbackArea').textContent='🎯 Hãy nhìn từng hàng và cột — điền hình còn thiếu vào ô vàng nhé!';
@@ -730,6 +1067,7 @@ function showAnswer(){
   document.getElementById('feedbackArea').textContent='🎯 Đáp án đúng là: '+currentAnswer;
   speak('Đáp án đúng là '+currentAnswer);
 }
+
 
 
 function setQuestion(label,text,visual,hint,answer,answers,grid3=false,isFormulaQ=false){
@@ -914,7 +1252,29 @@ function genD5(){
   }
   const ans=buildAnswers(correct,0,MAX_NUM);
   // q có dạng "3 + 4 = ?" → isFormulaQ=true
+    // Xác định hintType để animation đúng loại
+  let hintType;
+  if(!isAdd){
+    hintType='C';
+  } else if(small<=5){
+    hintType='A';
+  } else {
+    const bigUnit=big%10;
+    if(bigUnit===0) hintType='A';
+    else if(bigUnit>=5) hintType='B1';
+    else hintType='B2';
+  }
+
+  // Lưu data cho hint animation
+  d5HintData={isAdd, a, b,
+    total: isAdd? correct : (a+b),  // tổng thực
+    emoji, correct, hintType,
+    big: isAdd? Math.max(a,b) : 0,
+    small: isAdd? Math.min(a,b) : 0
+  };
+
   setQuestion('➕ Cộng trừ',q,visual,hint,correct,ans,false,true);
+
 }
 
 // --- Dạng 6 ---
@@ -1379,112 +1739,216 @@ function sudokuFill(el){
 // ===================== D13 – LẬP TRÌNH =====================
 // grid: 0=trống, 1=tường, 2=đích. hero=[r,c]
 const PROG_PUZZLES=[
-  // ===== 3x3 (giữ nguyên 3 cái cũ) =====
   {grid:[[0,0,0],[0,1,0],[0,0,2]], hero:[0,0], goal:[2,2], walls:[[1,1]],
-   opts:['Xuống, xuống, phải, phải ⬇️⬇️➡️➡️',
-         'Phải, phải, xuống, xuống ➡️➡️⬇️⬇️',
-         'Xuống, phải, xuống, phải ⬇️➡️⬇️➡️'],
-   correct:1,
-   hint:'Có tường chặn ở giữa! Con phải đi phải trước rồi mới xuống nhé.'},
+   moves:[['phải','phải','xuống','xuống'],['xuống','phải','xuống','phải'],['xuống','xuống','phải','phải']],
+   correct:0, hint:'Có tường chặn ở giữa! Con phải đi phải trước rồi mới xuống nhé.'},
   {grid:[[0,0,0],[1,1,0],[0,0,2]], hero:[0,0], goal:[2,2], walls:[[1,0],[1,1]],
-   opts:['Phải, phải, xuống, xuống ➡️➡️⬇️⬇️',
-         'Xuống, phải, phải, xuống ⬇️➡️➡️⬇️',
-         'Phải, xuống, phải, xuống ➡️⬇️➡️⬇️'],
-   correct:0,
-   hint:'Hàng giữa bị chặn bên trái. Con đi phải hết rồi mới xuống nhé!'},
+   moves:[['phải','phải','xuống','xuống'],['xuống','phải','phải','xuống'],['phải','xuống','phải','xuống']],
+   correct:0, hint:'Hàng giữa bị chặn bên trái. Con đi phải hết rồi mới xuống nhé!'},
   {grid:[[0,1,0],[0,0,0],[1,0,2]], hero:[0,0], goal:[2,2], walls:[[0,1],[2,0]],
-   opts:['Xuống, xuống, phải, phải ⬇️⬇️➡️➡️',
-         'Phải, xuống, phải, xuống ➡️⬇️➡️⬇️',
-         'Xuống, phải, xuống, phải ⬇️➡️⬇️➡️'],
-   correct:2,
-   hint:'Tường ở đầu hàng trên và đầu cột dưới. Con đi xuống, phải, xuống, phải!'},
-
-  // ===== 4x4 =====
-  {grid:[[0,0,0,0],[0,1,1,0],[0,0,0,0],[0,0,0,2]], hero:[0,0], goal:[3,3],
-   walls:[[1,1],[1,2]],
-   opts:['Xuống, phải, phải, phải, xuống, xuống ⬇️➡️➡️➡️⬇️⬇️',
-         'Phải, phải, phải, xuống, xuống, xuống ➡️➡️➡️⬇️⬇️⬇️',
-         'Xuống, xuống, phải, phải, phải, xuống ⬇️⬇️➡️➡️➡️⬇️'],
-   correct:1,
-   hint:'Hàng giữa bị chặn! Con đi phải hết 3 bước rồi mới xuống 3 bước nhé!'},
-  {grid:[[0,0,0,0],[1,1,0,0],[0,0,0,1],[0,0,0,2]], hero:[0,0], goal:[3,3],
-   walls:[[1,0],[1,1],[2,3]],
-   opts:['Phải, phải, xuống, xuống, phải, xuống ➡️➡️⬇️⬇️➡️⬇️',
-         'Phải, phải, phải, xuống, xuống, xuống ➡️➡️➡️⬇️⬇️⬇️',
-         'Xuống, phải, phải, phải, xuống, xuống ⬇️➡️➡️➡️⬇️⬇️'],
-   correct:0,
-   hint:'Bên trái bị chặn, góc phải dưới cũng bị chặn. Đi phải 2, xuống 2, phải 1, xuống 1!'},
-  {grid:[[0,0,0,0],[0,1,0,0],[0,1,0,0],[0,0,0,2]], hero:[0,0], goal:[3,3],
-   walls:[[1,1],[2,1]],
-   opts:['Phải, xuống, phải, phải, xuống, xuống ➡️⬇️➡️➡️⬇️⬇️',
-         'Xuống, xuống, xuống, phải, phải, phải ⬇️⬇️⬇️➡️➡️➡️',
-         'Phải, phải, phải, xuống, xuống, xuống ➡️➡️➡️⬇️⬇️⬇️'],
-   correct:2,
-   hint:'Cột thứ 2 bị chặn 2 ô liên tiếp. Con đi phải 3 bước rồi xuống 3 bước!'},
-
-  // ===== 5x5 =====
-  {grid:[[0,0,0,0,0],[0,1,1,0,0],[0,0,0,1,0],[0,1,0,0,0],[0,0,0,0,2]],
-   hero:[0,0], goal:[4,4],
-   walls:[[1,1],[1,2],[2,3],[3,1]],
-   opts:['Xuống, phải, xuống, phải, phải, xuống, phải, xuống ⬇️➡️⬇️➡️➡️⬇️➡️⬇️',
-         'Phải, phải, phải, phải, xuống, xuống, xuống, xuống ➡️➡️➡️➡️⬇️⬇️⬇️⬇️',
-         'Xuống, xuống, phải, phải, xuống, phải, phải, xuống ⬇️⬇️➡️➡️⬇️➡️➡️⬇️'],
-   correct:1,
-   hint:'Lưới 5x5 rộng hơn! Con thử đi phải 4 bước rồi xuống 4 bước xem có bị chặn không nhé!'},
-  {grid:[[0,0,0,0,0],[1,1,0,0,0],[0,0,0,1,0],[0,1,1,0,0],[0,0,0,0,2]],
-   hero:[0,0], goal:[4,4],
-   walls:[[1,0],[1,1],[2,3],[3,1],[3,2]],
-   opts:['Phải, phải, xuống, xuống, phải, xuống, phải, xuống ➡️➡️⬇️⬇️➡️⬇️➡️⬇️',
-         'Phải, phải, phải, phải, xuống, xuống, xuống, xuống ➡️➡️➡️➡️⬇️⬇️⬇️⬇️',
-         'Xuống, phải, phải, phải, xuống, phải, xuống, xuống ⬇️➡️➡️➡️⬇️➡️⬇️⬇️'],
-   correct:1,
-   hint:'Bên trái bị chặn nhiều! Thử đi phải hết rồi mới xuống xem sao nhé!'},
+   moves:[['xuống','phải','xuống','phải'],['xuống','xuống','phải','phải'],['phải','xuống','phải','xuống']],
+   correct:0, hint:'Tường ở đầu hàng trên và đầu cột dưới. Con đi xuống, phải, xuống, phải!'},
+  {grid:[[0,0,0,0],[0,1,1,0],[0,0,0,0],[0,0,0,2]], hero:[0,0], goal:[3,3], walls:[[1,1],[1,2]],
+   moves:[['phải','phải','phải','xuống','xuống','xuống'],['xuống','phải','phải','phải','xuống','xuống'],['xuống','xuống','phải','phải','phải','xuống']],
+   correct:0, hint:'Hàng giữa bị chặn! Con đi phải hết 3 bước rồi mới xuống 3 bước nhé!'},
+  {grid:[[0,0,0,0],[1,1,0,0],[0,0,0,1],[0,0,0,2]], hero:[0,0], goal:[3,3], walls:[[1,0],[1,1],[2,3]],
+   moves:[['phải','phải','xuống','xuống','phải','xuống'],['phải','phải','phải','xuống','xuống','xuống'],['xuống','phải','phải','phải','xuống','xuống']],
+   correct:0, hint:'Bên trái bị chặn, góc phải dưới cũng bị chặn. Đi phải 2, xuống 2, phải 1, xuống 1!'},
+  {grid:[[0,0,0,0],[0,1,0,0],[0,1,0,0],[0,0,0,2]], hero:[0,0], goal:[3,3], walls:[[1,1],[2,1]],
+   moves:[['phải','phải','phải','xuống','xuống','xuống'],['phải','xuống','phải','phải','xuống','xuống'],['xuống','xuống','xuống','phải','phải','phải']],
+   correct:0, hint:'Cột thứ 2 bị chặn 2 ô liên tiếp. Con đi phải 3 bước rồi xuống 3 bước!'},
+  {grid:[[0,0,0,0,0],[0,1,1,0,0],[0,0,0,1,0],[0,1,0,0,0],[0,0,0,0,2]], hero:[0,0], goal:[4,4], walls:[[1,1],[1,2],[2,3],[3,1]],
+   moves:[['phải','phải','phải','phải','xuống','xuống','xuống','xuống'],['xuống','phải','xuống','phải','phải','xuống','phải','xuống'],['xuống','xuống','phải','phải','xuống','phải','phải','xuống']],
+   correct:0, hint:'Lưới 5x5! Thử đi phải 4 bước rồi xuống 4 bước xem có bị chặn không nhé!'},
+  {grid:[[0,0,0,0,0],[1,1,0,0,0],[0,0,0,1,0],[0,1,1,0,0],[0,0,0,0,2]], hero:[0,0], goal:[4,4], walls:[[1,0],[1,1],[2,3],[3,1],[3,2]],
+   moves:[['phải','phải','phải','phải','xuống','xuống','xuống','xuống'],['phải','phải','xuống','xuống','phải','xuống','phải','xuống'],['xuống','phải','phải','phải','xuống','phải','xuống','xuống']],
+   correct:0, hint:'Bên trái bị chặn nhiều! Thử đi phải hết rồi mới xuống xem sao nhé!'},
 ];
 
+// ===== State D13 interactive =====
+let progState = { puz:null, heroPos:[0,0], path:[], done:false };
+
+function playProgSound(type){
+  try{
+    const ac=new(window.AudioContext||window.webkitAudioContext)();
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    if(type==='step'){
+      o.type='sine'; o.frequency.value=880;
+      g.gain.setValueAtTime(0.3,ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.15);
+      o.start(); o.stop(ac.currentTime+0.15);
+    } else if(type==='wall'){
+      o.type='sawtooth'; o.frequency.value=180;
+      g.gain.setValueAtTime(0.4,ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.4);
+      o.frequency.linearRampToValueAtTime(120,ac.currentTime+0.4);
+      o.start(); o.stop(ac.currentTime+0.4);
+    } else if(type==='goal'){
+      o.type='sine'; o.frequency.value=1200;
+      g.gain.setValueAtTime(0.3,ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.5);
+      o.frequency.linearRampToValueAtTime(800,ac.currentTime+0.5);
+      o.start(); o.stop(ac.currentTime+0.5);
+    }
+  }catch(e){}
+}
+// Chuyển mảng moves → HTML mũi tên màu
+function movesToArrows(moves){
+  const MAP={
+    'phải': '<span style="color:#1d4ed8;font-size:1.6rem">➡️</span>',
+    'trái': '<span style="color:#f97316;font-size:1.6rem">⬅️</span>',
+    'xuống':'<span style="color:#ef4444;font-size:1.6rem">⬇️</span>',
+    'lên':  '<span style="color:#22c55e;font-size:1.6rem">⬆️</span>',
+  };
+  return moves.map(m=>MAP[m]||m).join('');
+}
 
 function genD13(){
   const puz=pick(PROG_PUZZLES);
-  const rows=puz.grid.length, cols=puz.grid[0].length;
+  progState={ puz, heroPos:[...puz.hero], path:[puz.hero.join(',')], done:false };
 
   document.getElementById('qLabel').textContent='💻 Lập trình đường đi';
-  document.getElementById('qText').textContent='Chọn lệnh đúng để dẫn nhân vật đến đích!';
+  document.getElementById('qText').textContent='Click vào ô kế bên 👧 để di chuyển đến 🏆!';
   document.getElementById('feedbackArea').className='feedback-area';
   document.getElementById('feedbackArea').textContent='';
   document.getElementById('hintBox').classList.remove('show');
   document.getElementById('answersGrid').innerHTML='';
 
   currentHint=puz.hint;
-  currentQuestion='Chọn lệnh đúng để dẫn nhân vật đến đích!';
-  currentAnswer=puz.opts[puz.correct];
+  currentQuestion='Click vào ô kế bên để di chuyển đến đích!';
+  currentAnswer='prog';
   currentIsFormulaQ=false;
   answered=false;
 
+  renderD13Grid();
+}
+
+function renderD13Grid(){
+  const {puz,heroPos,path}=progState;
+  const rows=puz.grid.length, cols=puz.grid[0].length;
+
   let html=`<div class="prog-wrap">`;
+  html+=`<div style="font-size:.78rem;color:#7c3aed;font-weight:700;text-align:center;margin-bottom:6px">
+    👆 Click ô kế bên 👧 để di chuyển
+  </div>`;
   html+=`<div class="prog-grid" style="grid-template-columns:repeat(${cols},1fr)">`;
+
   for(let r=0;r<rows;r++){
     for(let c=0;c<cols;c++){
       const isWall=puz.walls.some(w=>w[0]===r&&w[1]===c);
-      const isHero=puz.hero[0]===r&&puz.hero[1]===c;
+      const isHero=heroPos[0]===r&&heroPos[1]===c;
       const isGoal=puz.goal[0]===r&&puz.goal[1]===c;
-      const cls=isWall?'pc-wall':isHero?'pc-hero':isGoal?'pc-goal':'';
-      const icon=isWall?'🧱':isHero?'👧':isGoal?'🏆':'';
-      html+=`<div class="prog-cell ${cls}">${icon}</div>`;
+      const isPath=path.includes(r+','+c)&&!isHero&&!isGoal;
+      const isAdj=!isHero&&!isWall&&!progState.done&&(
+        (Math.abs(r-heroPos[0])===1&&c===heroPos[1])||
+        (Math.abs(c-heroPos[1])===1&&r===heroPos[0])
+      );
+      let cls='',icon='',style='',onclick='';
+      if(isWall)      {cls='pc-wall';icon='🧱';}
+      else if(isHero) {cls='pc-hero';icon='👧';}
+      else if(isGoal) {icon='🏆';style='background:linear-gradient(135deg,#fef9c3,#fde047);';}
+      else if(isPath) {icon='·';style='background:linear-gradient(135deg,#fce4ec,#f8bbd0);color:#e91e8c;font-size:1.4rem;';}
+      if(isAdj){
+        style+='border:2px dashed #e91e8c;cursor:pointer;';
+        onclick=`onclick="progMove(${r},${c})"`;
+      }
+      html+=`<div class="prog-cell ${cls}" style="${style}" ${onclick}>${icon}</div>`;
     }
   }
   html+='</div>';
-  html+='<div class="prog-opts">';
-  puz.opts.forEach((opt,i)=>{
-    html+=`<div class="prog-opt" data-idx="${i}" onclick="checkProg(this,${i},${puz.correct})">${opt}</div>`;
-  });
-  html+='</div></div>';
+
+  if(progState.done){
+    // Sinh đáp án: 1 đúng (path thực) + 2 sai (moves có sẵn trong data)
+    const actualMoves=pathToMoves(path);
+    const correctArrows=movesToArrows(actualMoves);
+
+    // Lấy 2 đáp án sai từ puz.moves (bỏ cái trùng actualMoves)
+    const wrongOpts=puz.moves
+      .filter(m=>JSON.stringify(m)!==JSON.stringify(actualMoves))
+      .slice(0,2)
+      .map(m=>movesToArrows(m));
+
+    // Nếu không đủ 2 sai → tạo thêm bằng cách đảo moves
+    while(wrongOpts.length<2){
+      const fake=[...actualMoves].reverse();
+      wrongOpts.push(movesToArrows(fake));
+    }
+
+    // Shuffle 3 đáp án, nhớ index của đáp án đúng
+    const opts=[correctArrows,...wrongOpts];
+    const shuffled=shuffle(opts.map((html,i)=>({html,isCorrect:i===0})));
+
+    html+=`<div style="font-size:.82rem;font-weight:700;color:#e91e8c;text-align:center;margin:10px 0 4px">
+      🎯 Chọn chuỗi lệnh mô tả đường đi của con:
+    </div>`;
+    html+='<div class="prog-opts">';
+    shuffled.forEach((opt,i)=>{
+      html+=`<div class="prog-opt" data-correct="${opt.isCorrect}" 
+        onclick="checkProgNew(this)"
+        style="text-align:center;padding:14px;letter-spacing:3px">
+        ${opt.html}
+      </div>`;
+    });
+    html+='</div>';
+  }
+
+  html+='</div>';
   document.getElementById('qVisual').innerHTML=html;
 }
 
-function checkProg(el, idx, correct){
+
+function progMove(r,c){
+  if(progState.done) return;
+  const {puz}=progState;
+  const isWall=puz.walls.some(w=>w[0]===r&&w[1]===c);
+  if(isWall){
+    playProgSound('wall');
+    speak('Ú ù! Có tường rồi!');
+    return;
+  }
+  playProgSound('step');
+  progState.path.push(r+','+c);
+  progState.heroPos=[r,c];
+  if(r===puz.goal[0] && c===puz.goal[1]){
+    progState.done=true;
+    playProgSound('goal');
+    setTimeout(()=>speak('Đến đích rồi! Giờ con chọn chuỗi lệnh đúng nhé!'),300);
+  }
+  renderD13Grid();
+}
+
+// Chuyển path thành mảng lệnh ["phải","xuống",...]
+function pathToMoves(path){
+  const moves=[];
+  for(let i=1;i<path.length;i++){
+    const [r1,c1]=path[i-1].split(',').map(Number);
+    const [r2,c2]=path[i].split(',').map(Number);
+    if(r2>r1)      moves.push('xuống');
+    else if(r2<r1) moves.push('lên');
+    else if(c2>c1) moves.push('phải');
+    else           moves.push('trái');
+  }
+  return moves;
+}
+
+// So khớp moves với 1 opt string (bỏ emoji)
+function movesMatchOpt(moves, optStr){
+  const clean=optStr.replace(/[\u{1F300}-\u{1FAFF}⬇️➡️⬅️⬆️]/gu,'')
+    .toLowerCase().trim();
+  const optMoves=clean.split(/[,\s]+/).filter(Boolean);
+  if(moves.length!==optMoves.length) return false;
+  return moves.every((m,i)=>optMoves[i].includes(m)||m.includes(optMoves[i]));
+}
+
+
+function checkProgNew(el){
   if(answered) return;
   answered=true;
   const fb=document.getElementById('feedbackArea');
-  if(idx===correct){
+  const isCorrect=el.getAttribute('data-correct')==='true';
+
+  if(isCorrect){
     scoreCorrect++;
     document.getElementById('scoreCorrect').textContent=scoreCorrect;
     el.classList.add('po-ok');
@@ -1496,12 +1960,17 @@ function checkProg(el, idx, correct){
     scoreWrong++;
     document.getElementById('scoreWrong').textContent=scoreWrong;
     el.classList.add('po-err');
-    document.querySelectorAll('.prog-opt')[correct].classList.add('po-ok');
+    // Highlight đáp án đúng
+    document.querySelectorAll('.prog-opt').forEach(b=>{
+      if(b.getAttribute('data-correct')==='true') b.classList.add('po-ok');
+    });
     fb.className='feedback-area wrong';
-    fb.textContent='❌ Chưa đúng! Lệnh đúng là đáp án xanh!';
+    fb.textContent='❌ Chưa đúng! Xem đáp án xanh nhé!';
     speak('Chưa đúng rồi!');
   }
 }
+
+
 
 // ===================== D14 – HÌNH PHẲNG =====================
 const SHAPES=[
@@ -2299,15 +2768,19 @@ Cột đã có: ${colKnown.join(' ')}
       answers=shuffle([...emojis]);
       break;
     }
-    case 13:{ // Lập trình – hỏi lệnh đúng
-      const puz=pick(PROG_PUZZLES);
-      correct=puz.opts[puz.correct];
-      q=`Lưới ${puz.grid.length}x${puz.grid[0].length}: 👧 xuất phát, 🏆 là đích, 🧱 là tường.
-${puz.hint}
-Chọn chuỗi lệnh đúng:`;
-      answers=shuffle([...puz.opts]);
-      break;
-    }
+    case 13:{
+  const puz=pick(PROG_PUZZLES);
+  // Lấy moves đúng (index 0) và 2 sai
+  const correctMoves=puz.moves[0];
+  const wrongMoves=puz.moves.slice(1);
+  // Chuyển thành text đơn giản cho minitest
+  function movesToText(m){return m.join(', ');}
+  correct=movesToText(correctMoves);
+  q=`${puz.hint}\nChọn chuỗi lệnh đúng:`;
+  answers=shuffle([correct,...wrongMoves.map(movesToText)]);
+  break;
+}
+
     case 14:{ // Hình phẳng – nhận biết tên
       const nameShapes=SHAPES.filter(s=>s.type==='name');
       const shape=pick(nameShapes);
